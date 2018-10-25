@@ -13,7 +13,9 @@ export default class WorldMap {
     this.ctrl = ctrl;
     this.mapContainer = mapContainer;
     this.circles = [];
-
+    this.lineCoords = [];
+    this.lineColor = _.first(this.ctrl.panel.colors);
+    this.drawTrail = this.ctrl.panel.showTrail;
     return this.createMap();
   }
 
@@ -81,6 +83,10 @@ export default class WorldMap {
     if (this.needToRedrawCircles(data)) {
       this.clearCircles();
       this.createCircles(data);
+      this.clearPolyLine();
+      if (this.drawTrail) {
+        this.drawPolyLine();
+      }
     } else {
       this.updateCircles(data);
     }
@@ -90,10 +96,28 @@ export default class WorldMap {
     const circles = [];
     data.forEach((dataPoint) => {
       if (!dataPoint.locationName) return;
-      circles.push(this.createCircle(dataPoint));
+      const c = this.createCircle(dataPoint);
+      this.lineColor = this.getColor(dataPoint.value);
+      if (this.drawTrail) {
+        this.lineCoords.push([c.getLatLng().lat, c.getLatLng().lng]);
+      }
+      circles.push(c);
     });
     this.circlesLayer = this.addCircles(circles);
     this.circles = circles;
+  }
+
+  clearPolyLine() {
+    if (this.linesLayer) {
+      this.removeLines(this.linesLayer);
+    }
+  }
+
+  drawPolyLine() {
+    this.linesLayer = window.L.polyline(this.lineCoords, {
+      color: this.lineColor
+    }).addTo(this.map);
+    return this.linesLayer;
   }
 
   updateCircles(data) {
@@ -198,6 +222,18 @@ export default class WorldMap {
 
   removeCircles() {
     this.map.removeLayer(this.circlesLayer);
+  }
+
+  removeLines() {
+    this.map.removeLayer(this.linesLayer);
+  }
+
+  showTrail(flag) {
+    console.log('CTRL: setTrail %o', flag);
+    this.drawTrail = flag;
+    if (!this.drawTrail) {
+      this.clearPolyLine();
+    }
   }
 
   setZoom(zoomFactor) {

@@ -24,6 +24,7 @@ const panelDefaults = {
   unitPlural: '',
   showLegend: true,
   mouseWheelZoom: false,
+  showTrail: false,
   esMetric: 'Count',
   decimals: 0,
   hideEmpty: false,
@@ -216,6 +217,11 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   toggleStickyLabels() {
     this.map.clearCircles();
     this.render();
+  }
+
+  toggleShowTrail() {
+    console.log('CTRL: toggleShowTrail %o', this.panel);
+    this.map.showTrail(this.panel.showTrail);
   }
 
   changeThresholds() {

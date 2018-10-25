@@ -48,7 +48,9 @@ System.register(['lodash', './libs/leaflet'], function (_export, _context) {
           this.ctrl = ctrl;
           this.mapContainer = mapContainer;
           this.circles = [];
-
+          this.lineCoords = [];
+          this.lineColor = _.first(this.ctrl.panel.colors);
+          this.drawTrail = this.ctrl.panel.showTrail;
           return this.createMap();
         }
 
@@ -126,6 +128,10 @@ System.register(['lodash', './libs/leaflet'], function (_export, _context) {
             if (this.needToRedrawCircles(data)) {
               this.clearCircles();
               this.createCircles(data);
+              this.clearPolyLine();
+              if (this.drawTrail) {
+                this.drawPolyLine();
+              }
             } else {
               this.updateCircles(data);
             }
@@ -138,10 +144,30 @@ System.register(['lodash', './libs/leaflet'], function (_export, _context) {
             var circles = [];
             data.forEach(function (dataPoint) {
               if (!dataPoint.locationName) return;
-              circles.push(_this3.createCircle(dataPoint));
+              var c = _this3.createCircle(dataPoint);
+              _this3.lineColor = _this3.getColor(dataPoint.value);
+              if (_this3.drawTrail) {
+                _this3.lineCoords.push([c.getLatLng().lat, c.getLatLng().lng]);
+              }
+              circles.push(c);
             });
             this.circlesLayer = this.addCircles(circles);
             this.circles = circles;
+          }
+        }, {
+          key: 'clearPolyLine',
+          value: function clearPolyLine() {
+            if (this.linesLayer) {
+              this.removeLines(this.linesLayer);
+            }
+          }
+        }, {
+          key: 'drawPolyLine',
+          value: function drawPolyLine() {
+            this.linesLayer = window.L.polyline(this.lineCoords, {
+              color: this.lineColor
+            }).addTo(this.map);
+            return this.linesLayer;
           }
         }, {
           key: 'updateCircles',
@@ -261,6 +287,20 @@ System.register(['lodash', './libs/leaflet'], function (_export, _context) {
           key: 'removeCircles',
           value: function removeCircles() {
             this.map.removeLayer(this.circlesLayer);
+          }
+        }, {
+          key: 'removeLines',
+          value: function removeLines() {
+            this.map.removeLayer(this.linesLayer);
+          }
+        }, {
+          key: 'showTrail',
+          value: function showTrail(flag) {
+            console.log('CTRL: setTrail %o', flag);
+            this.drawTrail = flag;
+            if (!this.drawTrail) {
+              this.clearPolyLine();
+            }
           }
         }, {
           key: 'setZoom',
