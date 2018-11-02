@@ -1,14 +1,14 @@
 {
-  "name": "worldmap-panel",
+  "name": "custom-worldmap-panel",
   "version": "1.0.0",
-  "description": "Worldmap Panel Plugin for Grafana",
+  "description": "Worldmap Panel Plugin for Trapeze Grafana",
   "main": "src/module.js",
   "scripts": {
     "clean": "rm -r dist/*",
     "lint": "eslint --color .",
     "lint:watch": "onchange 'src/**/*.js' -- npm run lint",
     "build": "grunt",
-    "prebuild": "npm run lint && npm run clean",
+    "prebuild": "npm run clean",
     "build:watch": "onchange './src/**/*.js' './src/**/*.css' './src/**/*.html' './src/plugin.json' -- npm run build",
     "test:watch": "karma start",
     "test": "karma start --single-run"
@@ -19,7 +19,7 @@
     "plugin",
     "panel"
   ],
-  "author": "Grafana Labs",
+  "author": "Grafana Labs, Ravith Botejue, Kaushalya Rathnayake",
   "license": "MIT",
   "devDependencies": {
     "babel": "~6.5.1",

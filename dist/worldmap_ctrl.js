@@ -85,6 +85,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         showLegend: true,
         mouseWheelZoom: false,
         showTrail: false,
+        showAsAntPath: false,
         esMetric: 'Count',
         decimals: 0,
         hideEmpty: false,
@@ -304,8 +305,12 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         }, {
           key: 'toggleShowTrail',
           value: function toggleShowTrail() {
-            console.log('CTRL: toggleShowTrail %o', this.panel);
             this.map.showTrail(this.panel.showTrail);
+          }
+        }, {
+          key: 'toggleShowAsAntPath',
+          value: function toggleShowAsAntPath() {
+            this.map.setShowAsAntPath(this.panel.showAsAntPath);
           }
         }, {
           key: 'changeThresholds',

@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['lodash', './libs/leaflet'], function (_export, _context) {
+System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], function (_export, _context) {
   "use strict";
 
-  var _, L, _createClass, tileServers, WorldMap;
+  var _, L, antPath, _createClass, tileServers, WorldMap;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -16,6 +16,8 @@ System.register(['lodash', './libs/leaflet'], function (_export, _context) {
       _ = _lodash.default;
     }, function (_libsLeaflet) {
       L = _libsLeaflet.default;
+    }, function (_libsLeafletAntPath) {
+      antPath = _libsLeafletAntPath.antPath;
     }],
     execute: function () {
       _createClass = function () {
@@ -51,6 +53,7 @@ System.register(['lodash', './libs/leaflet'], function (_export, _context) {
           this.lineCoords = [];
           this.lineColor = _.first(this.ctrl.panel.colors);
           this.drawTrail = this.ctrl.panel.showTrail;
+          this.showAsAntPath = true;
           return this.createMap();
         }
 
@@ -164,9 +167,22 @@ System.register(['lodash', './libs/leaflet'], function (_export, _context) {
         }, {
           key: 'drawPolyLine',
           value: function drawPolyLine() {
-            this.linesLayer = window.L.polyline(this.lineCoords, {
-              color: this.lineColor
-            }).addTo(this.map);
+            console.log("Coords : %o", this.lineCoords);
+            if (this.showAsAntPath) {
+              this.linesLayer = window.L.polyline.antPath(this.lineCoords, {
+                'delay': 400,
+                'dashArray': [10, 20],
+                'weight': 5,
+                'color': this.lineColor,
+                'pulseColor': '#FFFFFF',
+                'paused': false,
+                'reverse': false
+              }).addTo(this.map);
+            } else {
+              this.linesLayer = window.L.polyline(this.lineCoords, {
+                color: this.lineColor
+              }).addTo(this.map);
+            }
             return this.linesLayer;
           }
         }, {
@@ -301,6 +317,11 @@ System.register(['lodash', './libs/leaflet'], function (_export, _context) {
             if (!this.drawTrail) {
               this.clearPolyLine();
             }
+          }
+        }, {
+          key: 'setShowAsAntPath',
+          value: function setShowAsAntPath(flag) {
+            this.showAsAntPath = flag;
           }
         }, {
           key: 'setZoom',

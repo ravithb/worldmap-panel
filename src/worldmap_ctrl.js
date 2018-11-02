@@ -25,6 +25,7 @@ const panelDefaults = {
   showLegend: true,
   mouseWheelZoom: false,
   showTrail: false,
+  showAsAntPath: false,
   esMetric: 'Count',
   decimals: 0,
   hideEmpty: false,
@@ -220,8 +221,11 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   }
 
   toggleShowTrail() {
-    console.log('CTRL: toggleShowTrail %o', this.panel);
     this.map.showTrail(this.panel.showTrail);
+  }
+
+  toggleShowAsAntPath() {
+    this.map.setShowAsAntPath(this.panel.showAsAntPath);
   }
 
   changeThresholds() {

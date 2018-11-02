@@ -2,6 +2,7 @@ import _ from 'lodash';
 /* eslint-disable id-length, no-unused-vars */
 import L from './libs/leaflet';
 /* eslint-disable id-length, no-unused-vars */
+import {antPath} from './libs/leaflet-ant-path';
 
 const tileServers = {
   'CartoDB Positron': { url: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>', subdomains: 'abcd'},
@@ -16,6 +17,7 @@ export default class WorldMap {
     this.lineCoords = [];
     this.lineColor = _.first(this.ctrl.panel.colors);
     this.drawTrail = this.ctrl.panel.showTrail;
+    this.showAsAntPath = true;
     return this.createMap();
   }
 
@@ -114,9 +116,22 @@ export default class WorldMap {
   }
 
   drawPolyLine() {
-    this.linesLayer = window.L.polyline(this.lineCoords, {
-      color: this.lineColor
-    }).addTo(this.map);
+    console.log("Coords : %o",this.lineCoords);
+    if(this.showAsAntPath){
+      this.linesLayer = window.L.polyline.antPath(this.lineCoords, {
+        'delay': 400,
+        'dashArray': [10, 20],
+        'weight': 5,
+        'color': this.lineColor,
+        'pulseColor': '#FFFFFF',
+        'paused': false,
+        'reverse': false
+      }).addTo(this.map);
+    }else{
+      this.linesLayer = window.L.polyline(this.lineCoords, {
+        color: this.lineColor
+      }).addTo(this.map);
+    }
     return this.linesLayer;
   }
 
@@ -234,6 +249,10 @@ export default class WorldMap {
     if (!this.drawTrail) {
       this.clearPolyLine();
     }
+  }
+
+  setShowAsAntPath(flag){
+    this.showAsAntPath = flag;
   }
 
   setZoom(zoomFactor) {

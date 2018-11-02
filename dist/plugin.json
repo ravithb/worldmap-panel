@@ -1,12 +1,12 @@
 {
   "type": "panel",
-  "name": "Worldmap Panel",
-  "id": "grafana-worldmap-panel",
+  "name": "Custom Worldmap Panel",
+  "id": "grafana-custom-worldmap-panel",
 
   "info": {
-    "description": "World Map panel for Grafana. Displays time series data or geohash data from Elasticsearch overlaid on a world map.",
+    "description": "Custom World Map panel based on World Map panel for Grafana. Displays time series data or geohash data from Elasticsearch overlaid on a world map.",
     "author": {
-      "name": "Grafana Labs",
+      "name": "Grafana Labs, Ravith Botejue, Kaushalya Rathnayake",
       "url": "https://grafana.com"
     },
     "keywords": ["worldmap", "panel"],
