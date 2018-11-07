@@ -17,6 +17,11 @@ export default class WorldMap {
     this.lineCoords = [];
     this.lineColor = _.first(this.ctrl.panel.colors);
     this.drawTrail = this.ctrl.panel.showTrail;
+    this.antPathDelay = this.ctrl.panel.antPathDelay;
+    this.useCustomAntPathColor = this.ctrl.panel.customAntPathColor;
+    this.antPathColor = this.ctrl.panel.antPathColor;
+    this.antPathPulseColor = this.ctrl.panel.antPathPulseColor;
+
     this.showAsAntPath = true;
     return this.createMap();
   }
@@ -116,18 +121,18 @@ export default class WorldMap {
   }
 
   drawPolyLine() {
-    console.log("Coords : %o",this.lineCoords);
-    if(this.showAsAntPath){
+    console.log('Coords : %o', this.lineCoords);
+    if (this.showAsAntPath) {
       this.linesLayer = window.L.polyline.antPath(this.lineCoords, {
-        'delay': 400,
+        'delay': this.antPathDelay,
         'dashArray': [10, 20],
         'weight': 5,
-        'color': this.lineColor,
-        'pulseColor': '#FFFFFF',
+        'color': (this.useCustomAntPathColor ? this.antPathColor : this.lineColor),
+        'pulseColor': (this.useCustomAntPathColor ? this.antPathPulseColor : '#FFFFFF'),
         'paused': false,
         'reverse': false
       }).addTo(this.map);
-    }else{
+    } else {
       this.linesLayer = window.L.polyline(this.lineCoords, {
         color: this.lineColor
       }).addTo(this.map);
@@ -251,7 +256,14 @@ export default class WorldMap {
     }
   }
 
-  setShowAsAntPath(flag){
+  setAntPathOptions(delay, useCustomColor, color, pulseColor) {
+    this.useCustomAntPathColor = useCustomColor;
+    this.antPathDelay = delay;
+    this.antPathColor = color;
+    this.antPathPulseColor = pulseColor;
+  }
+
+  setShowAsAntPath(flag) {
     this.showAsAntPath = flag;
   }
 

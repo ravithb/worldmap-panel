@@ -10,8 +10,8 @@
       <div class="gf-form" ng-show="ctrl.panel.mapCenter === 'custom'">
         <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.mapCenterLatitude" ng-change="ctrl.setNewMapCenter()"
           ng-model-onblur />
-        <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.mapCenterLongitude" ng-change="ctrl.setNewMapCenter()"
-          ng-model-onblur />
+        <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.mapCenterLongitude"
+          ng-change="ctrl.setNewMapCenter()" ng-model-onblur />
       </div>
     </div>
     <div class="gf-form">
@@ -29,7 +29,8 @@
       <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.circleMaxSize" ng-change="ctrl.render()"
         placeholder="30" ng-model-onblur />
     </div>
-    <gf-form-switch class="gf-form" label="Sticky Labels" label-class="width-10" checked="ctrl.panel.stickyLabels" on-change="ctrl.toggleStickyLabels()">
+    <gf-form-switch class="gf-form" label="Sticky Labels" label-class="width-10" checked="ctrl.panel.stickyLabels"
+      on-change="ctrl.toggleStickyLabels()">
     </gf-form-switch>
     <div class="gf-form">
       <label class="gf-form-label width-10">Decimals</label>
@@ -43,10 +44,13 @@
       <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.unitPlural" placeholder="plural form"
         ng-change="ctrl.render()" ng-model-onblur />
     </div>
-    <gf-form-switch class="gf-form" label="Show Legend" label-class="width-10" checked="ctrl.panel.showLegend" on-change="ctrl.toggleLegend()"></gf-form-switch>
-    <gf-form-switch class="gf-form" label="Mouse Wheel Zoom" label-class="width-10" checked="ctrl.panel.mouseWheelZoom" on-change="ctrl.toggleMouseWheelZoom()"></gf-form-switch>
+    <gf-form-switch class="gf-form" label="Show Legend" label-class="width-10" checked="ctrl.panel.showLegend"
+      on-change="ctrl.toggleLegend()"></gf-form-switch>
+    <gf-form-switch class="gf-form" label="Mouse Wheel Zoom" label-class="width-10" checked="ctrl.panel.mouseWheelZoom"
+      on-change="ctrl.toggleMouseWheelZoom()"></gf-form-switch>
     <gf-form-switch class="gf-form" label="Show Trail" label-class="width-10" checked="ctrl.panel.showTrail" on-change="ctrl.toggleShowTrail()"></gf-form-switch>
-    <gf-form-switch class="gf-form" label="Ant Path" label-class="width-10" checked="ctrl.panel.showAsAntPath" on-change="ctrl.toggleShowAsAntPath()"></gf-form-switch>
+    <gf-form-switch class="gf-form" label="Ant Path" label-class="width-10" checked="ctrl.panel.showAsAntPath"
+      on-change="ctrl.toggleShowAsAntPath()"></gf-form-switch>
   </div>
   <div class="section gf-form-group">
     <h5 class="section-heading">Map Data Options</h5>
@@ -67,13 +71,13 @@
       </div>
       <div class="gf-form" ng-show="ctrl.panel.locationData === 'json endpoint'">
         <label class="gf-form-label width-12">Endpoint url</label>
-        <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.jsonUrl" ng-change="ctrl.refresh()" ng-model-onblur
-        />
+        <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.jsonUrl" ng-change="ctrl.refresh()"
+          ng-model-onblur />
       </div>
       <div class="gf-form" ng-show="ctrl.panel.locationData === 'jsonp endpoint'">
         <label class="gf-form-label width-12">Endpoint url</label>
-        <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.jsonpUrl" ng-change="ctrl.refresh()" ng-model-onblur
-        />
+        <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.jsonpUrl" ng-change="ctrl.refresh()"
+          ng-model-onblur />
       </div>
       <div class="gf-form" ng-show="ctrl.panel.locationData === 'jsonp endpoint'">
         <label class="gf-form-label width-12">Jsonp Callback</label>
@@ -83,31 +87,38 @@
     </div>
     <div class="grafana-info-box max-width-28" ng-show="ctrl.panel.locationData ==='countries'">
       <h5>Mapping Between Time Series Query and Worldmap</h5>
-      <p>The query should be formatted as Time Series data. The time series (group by) name should be a 2-letter country code.
+      <p>The query should be formatted as Time Series data. The time series (group by) name should be a 2-letter
+        country code.
         For example: US for United States or FR for France.</p>
     </div>
     <div class="grafana-info-box max-width-28" ng-show="ctrl.panel.locationData ==='countries_3letter'">
       <h5>Mapping Between Time Series Query and Worldmap</h5>
-      <p>The query should be formatted as Time Series data. The time series (group by) name should be a 3-letter country code.
+      <p>The query should be formatted as Time Series data. The time series (group by) name should be a 3-letter
+        country code.
         For example: USA for United States or FRA for France.</p>
     </div>
     <div class="grafana-info-box max-width-28" ng-show="ctrl.panel.locationData ==='states'">
-        <h5>Mapping Between Time Series Query and Worldmap</h5>
-        <p>The query should be formatted as Time Series data. The time series (group by) name should be a 2-letter US state code.
-          For example: CA for California.</p>
-      </div>
+      <h5>Mapping Between Time Series Query and Worldmap</h5>
+      <p>The query should be formatted as Time Series data. The time series (group by) name should be a 2-letter US
+        state code.
+        For example: CA for California.</p>
+    </div>
     <div class="grafana-info-box max-width-28" ng-show="ctrl.panel.locationData ==='geohash'">
       <h5>Mapping Between Geohash Query and Worldmap</h5>
-      <p>The query should be an Elasticsearch using the Geo Hash Grid feature or a Prometheus query that returns geohashes.</p>
+      <p>The query should be an Elasticsearch using the Geo Hash Grid feature or a Prometheus query that returns
+        geohashes.</p>
       <ul>
         <li>
-          <b>Location Name Field (optional)</b>: enter the name of the Location Name column. Used to label each circle on the
+          <b>Location Name Field (optional)</b>: enter the name of the Location Name column. Used to label each circle
+          on the
           map. If it is empty then the geohash value is used as the label.</li>
         <li>
-          <b>geo_point/geohash Field</b>: enter the name of the geo_point/geohash column. This is used to calculate where the
+          <b>geo_point/geohash Field</b>: enter the name of the geo_point/geohash column. This is used to calculate
+          where the
           circle should be drawn.</li>
         <li>
-          <b>Metric Field</b>: enter the name of the metric column. This is used to give the circle a value - this determines
+          <b>Metric Field</b>: enter the name of the metric column. This is used to give the circle a value - this
+          determines
           how large the circle is.</li>
       </ul>
     </div>
@@ -116,27 +127,34 @@
       <p>The query should be formatted as Table data and have a geohash column and a numeric metric column.</p>
       <ul>
         <li>
-          <b>Location Name Field (optional)</b>: enter the name of the Location Name column. Used to label each circle on the
+          <b>Location Name Field (optional)</b>: enter the name of the Location Name column. Used to label each circle
+          on the
           map. If it is empty then the geohash value is used as the label.</li>
         <li>
-          <b>Geohash Field</b>: enter the name of the geohash column. This is used to calculate where the circle should be drawn.</li>
+          <b>Geohash Field</b>: enter the name of the geohash column. This is used to calculate where the circle should
+          be drawn.</li>
         <li>
-          <b>Metric Field</b>: enter the name of the metric column. This is used to give the circle a value - this determines
+          <b>Metric Field</b>: enter the name of the metric column. This is used to give the circle a value - this
+          determines
           how large the circle is.</li>
       </ul>
     </div>
     <div class="grafana-info-box max-width-28" ng-show="ctrl.showTableCoordinateOptions()">
       <h5>Mapping Between Table Query and Worldmap</h5>
-      <p>The query should be formatted as Table data and contain latitude, longitude columns and a numeric metric column.</p>
+      <p>The query should be formatted as Table data and contain latitude, longitude columns and a numeric metric
+        column.</p>
       <ul>
         <li>
-          <b>Location Name Field (optional)</b>: enter the name of the Location Name column. Used to label each circle on the
+          <b>Location Name Field (optional)</b>: enter the name of the Location Name column. Used to label each circle
+          on the
           map. If it is empty then the value N/A is used as the label.</li>
         <li>
-          <b>Latitude/Longitude Fields</b>: enter the name of the latitude and longitude columns. These are used to calculate
+          <b>Latitude/Longitude Fields</b>: enter the name of the latitude and longitude columns. These are used to
+          calculate
           where the circle should be drawn.</li>
         <li>
-          <b>Metric Field</b>: enter the name of the metric column. This is used to give the circle a value - this determines
+          <b>Metric Field</b>: enter the name of the metric column. This is used to give the circle a value - this
+          determines
           how large the circle is.</li>
       </ul>
     </div>
@@ -150,28 +168,28 @@
     </div>
     <div class="gf-form" ng-show="ctrl.panel.locationData === 'table'">
       <label class="gf-form-label width-12">Location Name Field</label>
-      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.labelField" ng-change="ctrl.refresh()"
-        ng-model-onblur />
+      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.labelField"
+        ng-change="ctrl.refresh()" ng-model-onblur />
     </div>
     <div class="gf-form" ng-show="ctrl.panel.locationData === 'table'">
       <label class="gf-form-label width-12">Metric Field</label>
-      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.metricField" ng-change="ctrl.refresh()"
-        ng-model-onblur />
+      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.metricField"
+        ng-change="ctrl.refresh()" ng-model-onblur />
     </div>
     <div class="gf-form" ng-show="ctrl.showTableGeohashOptions()">
       <label class="gf-form-label width-12">Geohash Field</label>
-      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.geohashField" ng-change="ctrl.refresh()"
-        ng-model-onblur />
+      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.geohashField"
+        ng-change="ctrl.refresh()" ng-model-onblur />
     </div>
     <div class="gf-form" ng-show="ctrl.showTableCoordinateOptions()">
       <label class="gf-form-label width-12">Latitude Field</label>
-      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.latitudeField" ng-change="ctrl.refresh()"
-        ng-model-onblur />
+      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.latitudeField"
+        ng-change="ctrl.refresh()" ng-model-onblur />
     </div>
     <div class="gf-form" ng-show="ctrl.showTableCoordinateOptions()">
       <label class="gf-form-label width-12">Longitude Field</label>
-      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.longitudeField" ng-change="ctrl.refresh()"
-        ng-model-onblur />
+      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.longitudeField"
+        ng-change="ctrl.refresh()" ng-model-onblur />
     </div>
     <div class="gf-form" ng-show="ctrl.panel.locationData === 'geohash'">
       <label class="gf-form-label width-12">Location Name Field</label>
@@ -185,8 +203,32 @@
     </div>
     <div class="gf-form" ng-show="ctrl.panel.locationData === 'geohash'">
       <label class="gf-form-label width-12">Metric Field</label>
-      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.esMetric" ng-change="ctrl.refresh()" ng-model-onblur
-      />
+      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.esMetric" ng-change="ctrl.refresh()"
+        ng-model-onblur />
+    </div>
+  </div>
+</div>
+<div class="editor-row">
+  <div class="section gf-form-group" ng-show="ctrl.panel.showAsAntPath">
+    <h5 class="section-heading">Antpath Options</h5>
+    <div class="gf-form">
+      <gf-form-switch class="gf-form" label="Use custom colours" label-class="width-10" checked="ctrl.panel.useCustomAntPathColor"
+      on-change="ctrl.changeAntpathOptions()"></gf-form-switch>
+    </div>
+    <div class="gf-form">
+      <label class="gf-form-label width-10">Delay</label>
+      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.antPathDelay" 
+        ng-change="ctrl.changeAntpathOptions()" ng-model-onblur />
+    </div>
+    <div class="gf-form" ng-show="ctrl.panel.useCustomAntPathColor">
+      <label class="gf-form-label width-10">Path Colour</label>
+      <spectrum-picker class="gf-form-input width-3" ng-model="ctrl.panel.antPathColor"
+        ng-change="ctrl.changeAntpathOptions()"></spectrum-picker>
+    </div>
+    <div class="gf-form" ng-show="ctrl.panel.useCustomAntPathColor">
+      <label class="gf-form-label width-10">Pulse Colour</label>
+      <spectrum-picker class="gf-form-input width-3" ng-model="ctrl.panel.antPathPulseColor"
+        ng-change="ctrl.changeAntpathOptions()"></spectrum-picker>
     </div>
   </div>
 
@@ -206,9 +248,11 @@
 
   <div class="section gf-form-group">
     <h5 class="section-heading">Hide series</h5>
-    <gf-form-switch class="gf-form" label="With only nulls" label-class="width-10" checked="ctrl.panel.hideEmpty" on-change="ctrl.render()">
+    <gf-form-switch class="gf-form" label="With only nulls" label-class="width-10" checked="ctrl.panel.hideEmpty"
+      on-change="ctrl.render()">
     </gf-form-switch>
-    <gf-form-switch class="gf-form" label="With only zeros" label-class="width-10" checked="ctrl.panel.hideZero" on-change="ctrl.render()">
+    <gf-form-switch class="gf-form" label="With only zeros" label-class="width-10" checked="ctrl.panel.hideZero"
+      on-change="ctrl.render()">
     </gf-form-switch>
   </div>
 </div>

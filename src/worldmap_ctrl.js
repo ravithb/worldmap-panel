@@ -26,6 +26,10 @@ const panelDefaults = {
   mouseWheelZoom: false,
   showTrail: false,
   showAsAntPath: false,
+  antPathDelay: 400,
+  useCustomAntPathColor: false,
+  antPathColor: 'rgba(50, 172, 45, 0.97)',
+  antPathPulseColor: '#FFFFFF',
   esMetric: 'Count',
   decimals: 0,
   hideEmpty: false,
@@ -226,6 +230,14 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
 
   toggleShowAsAntPath() {
     this.map.setShowAsAntPath(this.panel.showAsAntPath);
+  }
+
+  changeAntpathOptions() {
+    this.map.setAntPathOptions(this.panel.antPathDelay,
+      this.panel.useCustomAntPathColor,
+      this.panel.antPathColor,
+      this.panel.antPathPulseColor);
+    this.render();
   }
 
   changeThresholds() {

@@ -86,6 +86,10 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         mouseWheelZoom: false,
         showTrail: false,
         showAsAntPath: false,
+        antPathDelay: 400,
+        useCustomAntPathColor: false,
+        antPathColor: 'rgba(50, 172, 45, 0.97)',
+        antPathPulseColor: '#FFFFFF',
         esMetric: 'Count',
         decimals: 0,
         hideEmpty: false,
@@ -311,6 +315,12 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           key: 'toggleShowAsAntPath',
           value: function toggleShowAsAntPath() {
             this.map.setShowAsAntPath(this.panel.showAsAntPath);
+          }
+        }, {
+          key: 'changeAntpathOptions',
+          value: function changeAntpathOptions() {
+            this.map.setAntPathOptions(this.panel.antPathDelay, this.panel.useCustomAntPathColor, this.panel.antPathColor, this.panel.antPathPulseColor);
+            this.render();
           }
         }, {
           key: 'changeThresholds',

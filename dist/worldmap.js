@@ -53,6 +53,11 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
           this.lineCoords = [];
           this.lineColor = _.first(this.ctrl.panel.colors);
           this.drawTrail = this.ctrl.panel.showTrail;
+          this.antPathDelay = this.ctrl.panel.antPathDelay;
+          this.useCustomAntPathColor = this.ctrl.panel.customAntPathColor;
+          this.antPathColor = this.ctrl.panel.antPathColor;
+          this.antPathPulseColor = this.ctrl.panel.antPathPulseColor;
+
           this.showAsAntPath = true;
           return this.createMap();
         }
@@ -167,14 +172,14 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
         }, {
           key: 'drawPolyLine',
           value: function drawPolyLine() {
-            console.log("Coords : %o", this.lineCoords);
+            console.log('Coords : %o', this.lineCoords);
             if (this.showAsAntPath) {
               this.linesLayer = window.L.polyline.antPath(this.lineCoords, {
-                'delay': 400,
+                'delay': this.antPathDelay,
                 'dashArray': [10, 20],
                 'weight': 5,
-                'color': this.lineColor,
-                'pulseColor': '#FFFFFF',
+                'color': this.useCustomAntPathColor ? this.antPathColor : this.lineColor,
+                'pulseColor': this.useCustomAntPathColor ? this.antPathPulseColor : '#FFFFFF',
                 'paused': false,
                 'reverse': false
               }).addTo(this.map);
@@ -317,6 +322,14 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
             if (!this.drawTrail) {
               this.clearPolyLine();
             }
+          }
+        }, {
+          key: 'setAntPathOptions',
+          value: function setAntPathOptions(delay, useCustomColor, color, pulseColor) {
+            this.useCustomAntPathColor = useCustomColor;
+            this.antPathDelay = delay;
+            this.antPathColor = color;
+            this.antPathPulseColor = pulseColor;
           }
         }, {
           key: 'setShowAsAntPath',
