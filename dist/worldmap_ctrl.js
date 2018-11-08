@@ -90,6 +90,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         useCustomAntPathColor: false,
         antPathColor: 'rgba(50, 172, 45, 0.97)',
         antPathPulseColor: '#FFFFFF',
+        mapTileServer: 'CartoDB',
         esMetric: 'Count',
         decimals: 0,
         hideEmpty: false,
@@ -121,9 +122,13 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
 
           var _this = _possibleConstructorReturn(this, (WorldmapCtrl.__proto__ || Object.getPrototypeOf(WorldmapCtrl)).call(this, $scope, $injector));
 
-          _this.setMapProvider(contextSrv);
+          _this.context = contextSrv;
           _.defaults(_this.panel, panelDefaults);
+          _this.tileServer = _this.panel.mapTileServer;
+          _this.currentTileServer = _this.panel.mapTileServer;
+          _this.setMapProvider(contextSrv);
 
+          console.log('onInit current = %o', _this.currentTileServer);
           _this.dataFormatter = new DataFormatter(_this, kbn);
 
           _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
@@ -138,8 +143,34 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         _createClass(WorldmapCtrl, [{
           key: 'setMapProvider',
           value: function setMapProvider(contextSrv) {
-            this.tileServer = contextSrv.user.lightTheme ? 'CartoDB Positron' : 'CartoDB Dark';
+            switch (this.panel.mapTileServer) {
+              case 'Open Street Maps':
+                this.tileServer = 'Open Street Maps';
+                break;
+              case 'Stamen Maps':
+                this.tileServer = 'Stamen Maps';
+                break;
+              case 'CartoDB':
+              default:
+                this.tileServer = contextSrv.user.lightTheme ? 'CartoDB Positron' : 'CartoDB Dark';
+                break;
+            }
             this.setMapSaturationClass();
+          }
+        }, {
+          key: 'changeMapProvider',
+          value: function changeMapProvider() {
+            console.log('This = %o, Current = %o', this.panel.mapTileServer, this.currentTileServer);
+            if (this.panel.mapTileServer !== this.currentTileServer) {
+              this.setMapProvider(this.context);
+              if (this.map) {
+                this.map.remove();
+                this.map = null;
+              }
+
+              this.currentTileServer = this.tileServer;
+              this.render();
+            }
           }
         }, {
           key: 'setMapSaturationClass',

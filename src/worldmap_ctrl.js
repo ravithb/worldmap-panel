@@ -30,6 +30,7 @@ const panelDefaults = {
   useCustomAntPathColor: false,
   antPathColor: 'rgba(50, 172, 45, 0.97)',
   antPathPulseColor: '#FFFFFF',
+  mapTileServer: 'CartoDB',
   esMetric: 'Count',
   decimals: 0,
   hideEmpty: false,
@@ -55,12 +56,17 @@ const mapCenters = {
 };
 
 export default class WorldmapCtrl extends MetricsPanelCtrl {
+  currentTileServer;
+  context;
   constructor($scope, $injector, contextSrv) {
     super($scope, $injector);
-
-    this.setMapProvider(contextSrv);
+    this.context = contextSrv;
     _.defaults(this.panel, panelDefaults);
+    this.tileServer = this.panel.mapTileServer;
+    this.currentTileServer = this.panel.mapTileServer;
+    this.setMapProvider(contextSrv);
 
+    console.log('onInit current = %o', this.currentTileServer);
     this.dataFormatter = new DataFormatter(this, kbn);
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
@@ -72,8 +78,33 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   }
 
   setMapProvider(contextSrv) {
-    this.tileServer = contextSrv.user.lightTheme ? 'CartoDB Positron' : 'CartoDB Dark';
+    switch (this.panel.mapTileServer) {
+      case 'Open Street Maps':
+        this.tileServer = 'Open Street Maps';
+        break;
+      case 'Stamen Maps':
+        this.tileServer = 'Stamen Maps';
+        break;
+      case 'CartoDB':
+      default:
+        this.tileServer = contextSrv.user.lightTheme ? 'CartoDB Positron' : 'CartoDB Dark';
+        break;
+    }
     this.setMapSaturationClass();
+  }
+
+  changeMapProvider() {
+    console.log('This = %o, Current = %o', this.panel.mapTileServer, this.currentTileServer);
+    if (this.panel.mapTileServer !== this.currentTileServer) {
+      this.setMapProvider(this.context);
+      if (this.map) {
+        this.map.remove();
+        this.map = null;
+      }
+
+      this.currentTileServer = this.tileServer;
+      this.render();
+    }
   }
 
   setMapSaturationClass() {
