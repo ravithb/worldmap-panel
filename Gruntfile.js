@@ -8,6 +8,12 @@ module.exports = (grunt) => {
 
   grunt.initConfig({
 
+    clean: {
+      build: ['dist/*'],
+      tmp: ['custom-worldmap*'],
+      release: ['custom-worldmap*.zip']
+    },
+
     copy: {
       src_to_dist: {
         cwd: 'src',
@@ -26,6 +32,12 @@ module.exports = (grunt) => {
         flatten: true,
         src: ['*.*'],
         dest: 'dist/images/'
+      },
+      dist_to_tmp: {
+        cwd: './',
+        expand: true,
+        src: ['**/*', '!**/node_modules/**', '!**/custom-worldmap*.zip'],
+        dest: 'custom-worldmap'
       },
     },
 
@@ -48,5 +60,5 @@ module.exports = (grunt) => {
 
   });
 
-  grunt.registerTask('default', ['copy:src_to_dist', 'copy:pluginDef', 'copy:img_to_dist', 'babel']);
+  grunt.registerTask('default', ['clean:build', 'clean:tmp', 'clean:release', 'copy:src_to_dist', 'copy:pluginDef', 'copy:img_to_dist', 'babel', 'clean:release', 'copy:dist_to_tmp']);
 };

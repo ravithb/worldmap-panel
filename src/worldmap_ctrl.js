@@ -170,7 +170,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   }
 
   onInitEditMode() {
-    this.addEditorTab('Worldmap', 'public/plugins/grafana-custom-worldmap-panel/partials/editor.html', 2);
+    this.addEditorTab('Worldmap', 'public/plugins/ravithb-grafana-custom-worldmap-panel/partials/editor.html', 2);
   }
 
   onDataReceived(dataList) {

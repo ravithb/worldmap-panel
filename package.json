@@ -4,11 +4,11 @@
   "description": "Worldmap Panel Plugin for Trapeze Grafana",
   "main": "src/module.js",
   "scripts": {
-    "clean": "rm -r dist/*",
+    "clean": "grunt clean",
     "lint": "eslint --color .",
     "lint:watch": "onchange 'src/**/*.js' -- npm run lint",
     "build": "grunt",
-    "prebuild": "npm run lint && npm run clean",
+    "prebuild": "npm run clean && npm run lint",
     "build:watch": "onchange './src/**/*.js' './src/**/*.css' './src/**/*.html' './src/plugin.json' -- npm run build",
     "test:watch": "karma start",
     "test": "karma start --single-run"
