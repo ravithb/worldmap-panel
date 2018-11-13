@@ -244,7 +244,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         }, {
           key: 'onInitEditMode',
           value: function onInitEditMode() {
-            this.addEditorTab('Worldmap', 'public/plugins/grafana-custom-worldmap-panel/partials/editor.html', 2);
+            this.addEditorTab('Worldmap', 'public/plugins/ravithb-grafana-custom-worldmap-panel/partials/editor.html', 2);
           }
         }, {
           key: 'onDataReceived',
