@@ -243,6 +243,16 @@
       <spectrum-picker class="gf-form-input width-3" ng-model="ctrl.panel.antPathPulseColor"
         ng-change="ctrl.changeAntpathOptions()"></spectrum-picker>
     </div>
+    <div class="gf-form" ng-show="ctrl.panel.useCustomAntPathColor">
+      <label class="gf-form-label width-10">Path Colour 1</label>
+      <spectrum-picker class="gf-form-input width-3" ng-model="ctrl.panel.pathColor1"
+        ng-change="ctrl.changePathColors()"></spectrum-picker>
+    </div>
+    <div class="gf-form" ng-show="ctrl.panel.useCustomAntPathColor">
+      <label class="gf-form-label width-10">Path Colour 2</label>
+      <spectrum-picker class="gf-form-input width-3" ng-model="ctrl.panel.pathColor2"
+        ng-change="ctrl.changePathColors()"></spectrum-picker>
+    </div>
   </div>
 
   <div class="section gf-form-group">

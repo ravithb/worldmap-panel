@@ -34,12 +34,16 @@ export default class WorldMap {
     this.mapContainer = mapContainer;
     this.circles = [];
     this.lineCoords = [];
+    this.path1Coords = [];
+    this.path2Coords = [];
     this.lineColor = _.first(this.ctrl.panel.colors);
     this.drawTrail = this.ctrl.panel.showTrail;
     this.antPathDelay = this.ctrl.panel.antPathDelay;
     this.useCustomAntPathColor = this.ctrl.panel.customAntPathColor;
     this.antPathColor = this.ctrl.panel.antPathColor;
     this.antPathPulseColor = this.ctrl.panel.antPathPulseColor;
+    this.pathColor1 = this.ctrl.panel.pathColor1;
+    this.pathColor2 = this.ctrl.panel.pathColor2;
 
     this.showAsAntPath = true;
     return this.createMap();
@@ -106,12 +110,17 @@ export default class WorldMap {
 
   drawCircles() {
     const data = this.filterEmptyAndZeroValues(this.ctrl.data);
+    this.path1Coords = this.ctrl.path1Data;
+    this.path2Coords = this.ctrl.path2Data;
+
     if (this.needToRedrawCircles(data)) {
       this.clearCircles();
       this.createCircles(data);
       this.clearPolyLine();
       if (this.drawTrail) {
         this.drawPolyLine();
+        this.drawPathLayer1();
+        this.drawPathLayer2();
       }
     } else {
       this.updateCircles(data);
@@ -137,6 +146,32 @@ export default class WorldMap {
     if (this.linesLayer) {
       this.removeLines(this.linesLayer);
     }
+    if (this.pathLayer1) {
+      this.removeLines(this.pathLayer1);
+    }
+    if (this.pathLayer2) {
+      this.removeLines(this.pathLayer2);
+    }
+  }
+
+  drawPathLayer1() {
+    if (!this.path1Coords || this.path1Coords.length === 0) {
+      return;
+    }
+    this.pathLayer1 = window.L.polyline(this.path1Coords, {
+      color: this.pathColor1
+    }).addTo(this.map);
+    return this.pathLayer1;
+  }
+
+  drawPathLayer2() {
+    if (!this.path2Coords || this.path2Coords.length === 0) {
+      return;
+    }
+    this.pathLayer2 = window.L.polyline(this.path2Coords, {
+      color: this.pathColor2
+    }).addTo(this.map);
+    return this.pathLayer2;
   }
 
   drawPolyLine() {
@@ -280,6 +315,11 @@ export default class WorldMap {
     this.antPathDelay = delay;
     this.antPathColor = color;
     this.antPathPulseColor = pulseColor;
+  }
+
+  setPathColors(color1, color2) {
+    this.pathColor1 = color1;
+    this.pathColor2 = color2;
   }
 
   setShowAsAntPath(flag) {

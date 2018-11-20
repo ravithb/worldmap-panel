@@ -7,7 +7,7 @@ export default class DataFormatter {
     this.kbn = kbn;
   }
 
-  setValues(data) {
+  setValues(data, path1Data, path2Data) {
     if (this.ctrl.series && this.ctrl.series.length > 0) {
       let highestValue = 0;
       let lowestValue = Number.MAX_VALUE;
@@ -61,7 +61,7 @@ export default class DataFormatter {
     return dataValue;
   }
 
-  setGeohashValues(dataList, data) {
+  setGeohashValues(dataList, data, path1Data, path2Data) {
     if (!this.ctrl.panel.esGeoPoint || !this.ctrl.panel.esMetric) return;
 
     if (dataList && dataList.length > 0) {
@@ -137,7 +137,7 @@ export default class DataFormatter {
     return datapoints;
   }
 
-  setTableValues(tableData, data) {
+  setTableValues(tableData, data, path1Data, path2Data) {
     if (tableData && tableData.length > 0) {
       let highestValue = 0;
       let lowestValue = Number.MAX_VALUE;
@@ -183,7 +183,7 @@ export default class DataFormatter {
     }
   }
 
-  setJsonValues(data) {
+  setJsonValues(data, path1Data, path2Data) {
     if (this.ctrl.series && this.ctrl.series.length > 0) {
       let highestValue = 0;
       let lowestValue = Number.MAX_VALUE;

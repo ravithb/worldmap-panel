@@ -30,6 +30,8 @@ const panelDefaults = {
   useCustomAntPathColor: false,
   antPathColor: 'rgba(50, 172, 45, 0.97)',
   antPathPulseColor: '#FFFFFF',
+  pathColor1: '#ff4d4d',
+  pathColor2: '#1aff8c',
   mapTileServer: 'CartoDB',
   esMetric: 'Count',
   decimals: 0,
@@ -181,20 +183,24 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     }
 
     const data = [];
+    const path1Data = [];
+    const path2Data = [];
 
     if (this.panel.locationData === 'geohash') {
-      this.dataFormatter.setGeohashValues(dataList, data);
+      this.dataFormatter.setGeohashValues(dataList, data, path1Data, path2Data);
     } else if (this.panel.locationData === 'table') {
       const tableData = dataList.map(DataFormatter.tableHandler.bind(this));
-      this.dataFormatter.setTableValues(tableData, data);
+      this.dataFormatter.setTableValues(tableData, data, path1Data, path2Data);
     } else if (this.panel.locationData === 'json result') {
       this.series = dataList;
-      this.dataFormatter.setJsonValues(data);
+      this.dataFormatter.setJsonValues(data, path1Data, path2Data);
     } else {
       this.series = dataList.map(this.seriesHandler.bind(this));
-      this.dataFormatter.setValues(data);
+      this.dataFormatter.setValues(data, path1Data, path2Data);
     }
     this.data = data;
+    this.path1Data = path1Data;
+    this.path2Data = path2Data;
 
     this.updateThresholdData();
 
@@ -269,6 +275,10 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
       this.panel.antPathColor,
       this.panel.antPathPulseColor);
     this.render();
+  }
+
+  changePathColors() {
+    this.map.setPathColors(this.panel.pathColor1, this.panel.pathColor2);
   }
 
   changeThresholds() {

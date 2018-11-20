@@ -1,7 +1,7 @@
 {
   "type": "panel",
   "name": "Custom Worldmap Panel",
-  "id": "ravithb-grafana-custom-worldmap-panel",
+  "id": "grafana-custom-worldmap-panel",
 
   "info": {
     "description": "Custom World Map panel based on World Map panel for Grafana. Displays time series data or geohash data from Elasticsearch overlaid on a world map.",
