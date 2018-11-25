@@ -160,51 +160,62 @@ System.register(['lodash', './geohash'], function (_export, _context) {
           }
         }, {
           key: 'setTableValues',
-          value: function setTableValues(tableData, data) {
+          value: function setTableValues(tableData, masterData) {
             var _this3 = this;
 
             if (tableData && tableData.length > 0) {
               var highestValue = 0;
               var lowestValue = Number.MAX_VALUE;
 
-              tableData[0].forEach(function (datapoint) {
-                var key = void 0;
-                var longitude = void 0;
-                var latitude = void 0;
+              var index = 0;
+              tableData.forEach(function (td) {
+                var data = [];
+                td.forEach(function (datapoint) {
+                  var key = void 0;
+                  var longitude = void 0;
+                  var latitude = void 0;
 
-                if (_this3.ctrl.panel.tableQueryOptions.queryType === 'geohash') {
-                  var encodedGeohash = datapoint[_this3.ctrl.panel.tableQueryOptions.geohashField];
-                  var decodedGeohash = decodeGeoHash(encodedGeohash);
+                  if (_this3.ctrl.panel.tableQueryOptions.queryType === 'geohash') {
+                    try {
+                      var encodedGeohash = datapoint[_this3.ctrl.panel.tableQueryOptions.geohashField];
+                      var decodedGeohash = decodeGeoHash(encodedGeohash);
 
-                  latitude = decodedGeohash.latitude;
-                  longitude = decodedGeohash.longitude;
-                  key = encodedGeohash;
-                } else {
-                  latitude = datapoint[_this3.ctrl.panel.tableQueryOptions.latitudeField];
-                  longitude = datapoint[_this3.ctrl.panel.tableQueryOptions.longitudeField];
-                  key = latitude + '_' + longitude;
-                }
+                      latitude = decodedGeohash.latitude;
+                      longitude = decodedGeohash.longitude;
+                      key = encodedGeohash;
+                    } catch (exc) {
+                      console.log('Invalid geohash value');
+                    }
+                  } else {
+                    latitude = datapoint[_this3.ctrl.panel.tableQueryOptions.latitudeField];
+                    longitude = datapoint[_this3.ctrl.panel.tableQueryOptions.longitudeField];
+                    key = latitude + '_' + longitude;
+                  }
 
-                var dataValue = {
-                  key: key,
-                  locationName: datapoint[_this3.ctrl.panel.tableQueryOptions.labelField] || 'n/a',
-                  locationLatitude: latitude,
-                  locationLongitude: longitude,
-                  value: datapoint[_this3.ctrl.panel.tableQueryOptions.metricField],
-                  valueFormatted: datapoint[_this3.ctrl.panel.tableQueryOptions.metricField],
-                  valueRounded: 0
-                };
+                  var dataValue = {
+                    key: key,
+                    locationName: datapoint[_this3.ctrl.panel.tableQueryOptions.labelField] || 'n/a',
+                    locationLatitude: latitude,
+                    locationLongitude: longitude,
+                    marker: datapoint[_this3.ctrl.panel.tableQueryOptions.markerField],
+                    value: datapoint[_this3.ctrl.panel.tableQueryOptions.metricField],
+                    valueFormatted: datapoint[_this3.ctrl.panel.tableQueryOptions.metricField],
+                    valueRounded: 0
+                  };
 
-                if (dataValue.value > highestValue) highestValue = dataValue.value;
-                if (dataValue.value < lowestValue) lowestValue = dataValue.value;
+                  if (dataValue.value > highestValue) highestValue = dataValue.value;
+                  if (dataValue.value < lowestValue) lowestValue = dataValue.value;
 
-                dataValue.valueRounded = _this3.kbn.roundValue(dataValue.value, _this3.ctrl.panel.decimals || 0);
-                data.push(dataValue);
+                  dataValue.valueRounded = _this3.kbn.roundValue(dataValue.value, _this3.ctrl.panel.decimals || 0);
+                  data.push(dataValue);
+                });
+
+                masterData[index] = data;
+                data.highestValue = highestValue;
+                data.lowestValue = lowestValue;
+                data.valueRange = highestValue - lowestValue;
+                index += 1;
               });
-
-              data.highestValue = highestValue;
-              data.lowestValue = lowestValue;
-              data.valueRange = highestValue - lowestValue;
             }
           }
         }, {
@@ -221,6 +232,7 @@ System.register(['lodash', './geohash'], function (_export, _context) {
                   locationLatitude: point.latitude,
                   locationLongitude: point.longitude,
                   value: point.value !== undefined ? point.value : 1,
+                  marker: point.marker !== undefined ? point.marker : null,
                   valueRounded: 0
                 };
                 if (dataValue.value > highestValue) highestValue = dataValue.value;

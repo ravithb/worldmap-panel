@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], function (_export, _context) {
+System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './colors'], function (_export, _context) {
   "use strict";
 
-  var _, L, antPath, _createClass, tileServers, WorldMap;
+  var _, L, antPath, Colors, _createClass, tileServers, WorldMap;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -18,6 +18,8 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
       L = _libsLeaflet.default;
     }, function (_libsLeafletAntPath) {
       antPath = _libsLeafletAntPath.antPath;
+    }, function (_colors) {
+      Colors = _colors.default;
     }],
     execute: function () {
       _createClass = function () {
@@ -70,12 +72,17 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
           this.mapContainer = mapContainer;
           this.circles = [];
           this.lineCoords = [];
+          this.extraLineLayers = [];
+          this.markerLayers = [];
+          this.linesLayer = null;
           this.lineColor = _.first(this.ctrl.panel.colors);
           this.drawTrail = this.ctrl.panel.showTrail;
           this.antPathDelay = this.ctrl.panel.antPathDelay;
           this.useCustomAntPathColor = this.ctrl.panel.customAntPathColor;
           this.antPathColor = this.ctrl.panel.antPathColor;
           this.antPathPulseColor = this.ctrl.panel.antPathPulseColor;
+          this.extraLineColors = this.ctrl.panel.extraLineColors;
+          this.pathColor2 = this.ctrl.panel.pathColor2;
 
           this.showAsAntPath = true;
           return this.createMap();
@@ -84,6 +91,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
         _createClass(WorldMap, [{
           key: 'createMap',
           value: function createMap() {
+            window.L.Icon.Default.imagePath = '/public/plugins/grafana-custom-worldmap-panel/images/';
             var mapCenter = window.L.latLng(parseFloat(this.ctrl.panel.mapCenterLatitude), parseFloat(this.ctrl.panel.mapCenterLongitude));
             this.map = window.L.map(this.mapContainer, { worldCopyJump: true, center: mapCenter, zoom: parseInt(this.ctrl.panel.initialZoom, 10) || 1 });
             this.setMouseWheelZoom();
@@ -110,7 +118,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
             };
 
             this.legend.update = function () {
-              var thresholds = _this.ctrl.data.thresholds;
+              var thresholds = _this.ctrl.data[0].thresholds;
               var legendHtml = '';
               legendHtml += '<div class="legend-item"><i style="background:' + _this.ctrl.panel.colors[0] + '"></i> ' + '&lt; ' + thresholds[0] + '</div>';
               for (var index = 0; index < thresholds.length; index += 1) {
@@ -151,13 +159,19 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
         }, {
           key: 'drawCircles',
           value: function drawCircles() {
-            var data = this.filterEmptyAndZeroValues(this.ctrl.data);
+            var data = this.filterEmptyAndZeroValues(this.ctrl.data[0]);
+
             if (this.needToRedrawCircles(data)) {
               this.clearCircles();
               this.createCircles(data);
               this.clearPolyLine();
               if (this.drawTrail) {
-                this.drawPolyLine();
+                var linesLayer = this.drawPolyLine();
+                var extraLineLayers = this.drawExtraLines();
+                var combined = Array.from(extraLineLayers);
+                combined.push(linesLayer);
+                var group = window.L.featureGroup(combined);
+                this.map.fitBounds(group.getBounds());
               }
             } else {
               this.updateCircles(data);
@@ -184,14 +198,70 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
         }, {
           key: 'clearPolyLine',
           value: function clearPolyLine() {
+            var _this4 = this;
+
             if (this.linesLayer) {
               this.removeLines(this.linesLayer);
+            }
+            if (this.extraLineLayers) {
+              this.extraLineLayers.forEach(function (layer) {
+                _this4.removeLines(layer);
+              });
+            }
+            if (this.markerLayers) {
+              this.markerLayers.forEach(function (layer) {
+                _this4.removeLines(layer);
+              });
+            }
+          }
+        }, {
+          key: 'toCoords',
+          value: function toCoords(dataset) {
+            var resultArr = [];
+
+            dataset.forEach(function (dataPoint) {
+              resultArr.push([dataPoint.locationLatitude, dataPoint.locationLongitude]);
+            });
+
+            return resultArr;
+          }
+        }, {
+          key: 'drawMarkers',
+          value: function drawMarkers(dataset) {
+            var _this5 = this;
+
+            var self = this;
+            dataset.forEach(function (dataPoint) {
+              if (dataPoint.marker) {
+                var marker = window.L.marker([dataPoint.locationLatitude, dataPoint.locationLongitude], {
+                  title: dataPoint.marker
+                }).addTo(_this5.map);
+                self.markerLayers.push(marker);
+              }
+            });
+            return this.markerLayers;
+          }
+        }, {
+          key: 'drawExtraLines',
+          value: function drawExtraLines() {
+            var self = this;
+            if (!this.ctrl.data || this.ctrl.data.length < 1) {
+              return;
+            }
+
+            for (var dataIdx = 1; dataIdx < this.ctrl.data.length; dataIdx += 1) {
+              var lineColor = this.extraLineColors && this.extraLineColors.length >= dataIdx ? this.extraLineColors[dataIdx - 1] : Colors.random();
+              var layer = window.L.polyline(self.toCoords(this.ctrl.data[dataIdx]), {
+                color: lineColor
+              }).addTo(this.map);
+              this.extraLineLayers.push(layer);
+              self.drawMarkers(this.ctrl.data[dataIdx]);
+              return this.extraLineLayers;
             }
           }
         }, {
           key: 'drawPolyLine',
           value: function drawPolyLine() {
-            console.log('Coords : %o', this.lineCoords);
             if (this.showAsAntPath) {
               this.linesLayer = window.L.polyline.antPath(this.lineCoords, {
                 'delay': this.antPathDelay,
@@ -212,25 +282,25 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
         }, {
           key: 'updateCircles',
           value: function updateCircles(data) {
-            var _this4 = this;
+            var _this6 = this;
 
             data.forEach(function (dataPoint) {
               if (!dataPoint.locationName) return;
 
-              var circle = _.find(_this4.circles, function (cir) {
+              var circle = _.find(_this6.circles, function (cir) {
                 return cir.options.location === dataPoint.key;
               });
 
               if (circle) {
-                circle.setRadius(_this4.calcCircleSize(dataPoint.value || 0));
+                circle.setRadius(_this6.calcCircleSize(dataPoint.value || 0));
                 circle.setStyle({
-                  color: _this4.getColor(dataPoint.value),
-                  fillColor: _this4.getColor(dataPoint.value),
+                  color: _this6.getColor(dataPoint.value),
+                  fillColor: _this6.getColor(dataPoint.value),
                   fillOpacity: 0.5,
                   location: dataPoint.key
                 });
                 circle.unbindPopup();
-                _this4.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
+                _this6.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
               }
             });
           }
@@ -254,11 +324,11 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
             var circleMinSize = parseInt(this.ctrl.panel.circleMinSize, 10) || 2;
             var circleMaxSize = parseInt(this.ctrl.panel.circleMaxSize, 10) || 30;
 
-            if (this.ctrl.data.valueRange === 0) {
+            if (this.ctrl.data[0].valueRange === 0) {
               return circleMaxSize;
             }
 
-            var dataFactor = (dataPointValue - this.ctrl.data.lowestValue) / this.ctrl.data.valueRange;
+            var dataFactor = (dataPointValue - this.ctrl.data[0].lowestValue) / this.ctrl.data[0].valueRange;
             var circleSizeRange = circleMaxSize - circleMinSize;
 
             return circleSizeRange * dataFactor + circleMinSize;
@@ -285,8 +355,8 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
         }, {
           key: 'getColor',
           value: function getColor(value) {
-            for (var index = this.ctrl.data.thresholds.length; index > 0; index -= 1) {
-              if (value >= this.ctrl.data.thresholds[index - 1]) {
+            for (var index = this.ctrl.data[0].thresholds.length; index > 0; index -= 1) {
+              if (value >= this.ctrl.data[0].thresholds[index - 1]) {
                 return this.ctrl.panel.colors[index];
               }
             }
@@ -330,13 +400,12 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
           }
         }, {
           key: 'removeLines',
-          value: function removeLines() {
-            this.map.removeLayer(this.linesLayer);
+          value: function removeLines(layer) {
+            this.map.removeLayer(layer);
           }
         }, {
           key: 'showTrail',
           value: function showTrail(flag) {
-            console.log('CTRL: setTrail %o', flag);
             this.drawTrail = flag;
             if (!this.drawTrail) {
               this.clearPolyLine();
@@ -349,6 +418,17 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path'], functio
             this.antPathDelay = delay;
             this.antPathColor = color;
             this.antPathPulseColor = pulseColor;
+          }
+        }, {
+          key: 'setPathColors',
+          value: function setPathColors(color1, color2) {
+            this.pathColor1 = color1;
+            this.pathColor2 = color2;
+          }
+        }, {
+          key: 'setExtraLineColors',
+          value: function setExtraLineColors(colors) {
+            this.extraLineColors = colors;
           }
         }, {
           key: 'setShowAsAntPath',

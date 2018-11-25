@@ -3,6 +3,9 @@ import _ from 'lodash';
 import L from './libs/leaflet';
 /* eslint-disable id-length, no-unused-vars */
 import {antPath} from './libs/leaflet-ant-path';
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["toCoords"] }] */
+import Colors from './colors';
+
 
 const tileServers = {
   'CartoDB Positron': {
@@ -34,15 +37,16 @@ export default class WorldMap {
     this.mapContainer = mapContainer;
     this.circles = [];
     this.lineCoords = [];
-    this.path1Coords = [];
-    this.path2Coords = [];
+    this.extraLineLayers = [];
+    this.markerLayers = [];
+    this.linesLayer = null;
     this.lineColor = _.first(this.ctrl.panel.colors);
     this.drawTrail = this.ctrl.panel.showTrail;
     this.antPathDelay = this.ctrl.panel.antPathDelay;
     this.useCustomAntPathColor = this.ctrl.panel.customAntPathColor;
     this.antPathColor = this.ctrl.panel.antPathColor;
     this.antPathPulseColor = this.ctrl.panel.antPathPulseColor;
-    this.pathColor1 = this.ctrl.panel.pathColor1;
+    this.extraLineColors = this.ctrl.panel.extraLineColors;
     this.pathColor2 = this.ctrl.panel.pathColor2;
 
     this.showAsAntPath = true;
@@ -50,6 +54,7 @@ export default class WorldMap {
   }
 
   createMap() {
+    window.L.Icon.Default.imagePath = '/public/plugins/grafana-custom-worldmap-panel/images/';
     const mapCenter = window.L.latLng(parseFloat(this.ctrl.panel.mapCenterLatitude), parseFloat(this.ctrl.panel.mapCenterLongitude));
     this.map = window.L.map(this.mapContainer, { worldCopyJump: true, center: mapCenter, zoom: parseInt(this.ctrl.panel.initialZoom, 10) || 1 });
     this.setMouseWheelZoom();
@@ -73,7 +78,7 @@ export default class WorldMap {
     };
 
     this.legend.update = () => {
-      const thresholds = this.ctrl.data.thresholds;
+      const thresholds = this.ctrl.data[0].thresholds;
       let legendHtml = '';
       legendHtml += '<div class="legend-item"><i style="background:' + this.ctrl.panel.colors[0] + '"></i> ' +
           '&lt; ' + thresholds[0] + '</div>';
@@ -109,18 +114,19 @@ export default class WorldMap {
   }
 
   drawCircles() {
-    const data = this.filterEmptyAndZeroValues(this.ctrl.data);
-    this.path1Coords = this.ctrl.path1Data;
-    this.path2Coords = this.ctrl.path2Data;
+    const data = this.filterEmptyAndZeroValues(this.ctrl.data[0]);
 
     if (this.needToRedrawCircles(data)) {
       this.clearCircles();
       this.createCircles(data);
       this.clearPolyLine();
       if (this.drawTrail) {
-        this.drawPolyLine();
-        this.drawPathLayer1();
-        this.drawPathLayer2();
+        const linesLayer = this.drawPolyLine();
+        const extraLineLayers = this.drawExtraLines();
+        const combined = Array.from(extraLineLayers);
+        combined.push(linesLayer);
+        const group = window.L.featureGroup(combined);
+        this.map.fitBounds(group.getBounds());
       }
     } else {
       this.updateCircles(data);
@@ -146,36 +152,60 @@ export default class WorldMap {
     if (this.linesLayer) {
       this.removeLines(this.linesLayer);
     }
-    if (this.pathLayer1) {
-      this.removeLines(this.pathLayer1);
+    if (this.extraLineLayers) {
+      this.extraLineLayers.forEach((layer) => {
+        this.removeLines(layer);
+      });
     }
-    if (this.pathLayer2) {
-      this.removeLines(this.pathLayer2);
+    if (this.markerLayers) {
+      this.markerLayers.forEach((layer) => {
+        this.removeLines(layer);
+      });
     }
   }
 
-  drawPathLayer1() {
-    if (!this.path1Coords || this.path1Coords.length === 0) {
-      return;
-    }
-    this.pathLayer1 = window.L.polyline(this.path1Coords, {
-      color: this.pathColor1
-    }).addTo(this.map);
-    return this.pathLayer1;
+  toCoords(dataset) {
+    const resultArr = [];
+
+    dataset.forEach((dataPoint) => {
+      resultArr.push([dataPoint.locationLatitude, dataPoint.locationLongitude]);
+    });
+
+    return resultArr;
   }
 
-  drawPathLayer2() {
-    if (!this.path2Coords || this.path2Coords.length === 0) {
+  drawMarkers(dataset) {
+    const self = this;
+    dataset.forEach((dataPoint) => {
+      if (dataPoint.marker) {
+        const marker = window.L.marker([dataPoint.locationLatitude, dataPoint.locationLongitude], {
+          title: dataPoint.marker
+        }).addTo(this.map);
+        self.markerLayers.push(marker);
+      }
+    });
+    return this.markerLayers;
+  }
+
+  drawExtraLines() {
+    const self = this;
+    if (!this.ctrl.data || this.ctrl.data.length < 1) {
       return;
     }
-    this.pathLayer2 = window.L.polyline(this.path2Coords, {
-      color: this.pathColor2
-    }).addTo(this.map);
-    return this.pathLayer2;
+
+    for (let dataIdx = 1; dataIdx < this.ctrl.data.length; dataIdx += 1) {
+      const lineColor = (this.extraLineColors && this.extraLineColors.length >= dataIdx)
+        ? this.extraLineColors[dataIdx - 1] : Colors.random();
+      const layer = window.L.polyline(self.toCoords(this.ctrl.data[dataIdx]), {
+        color: lineColor
+      }).addTo(this.map);
+      this.extraLineLayers.push(layer);
+      self.drawMarkers(this.ctrl.data[dataIdx]);
+      return this.extraLineLayers;
+    }
   }
 
   drawPolyLine() {
-    console.log('Coords : %o', this.lineCoords);
     if (this.showAsAntPath) {
       this.linesLayer = window.L.polyline.antPath(this.lineCoords, {
         'delay': this.antPathDelay,
@@ -231,11 +261,11 @@ export default class WorldMap {
     const circleMinSize = parseInt(this.ctrl.panel.circleMinSize, 10) || 2;
     const circleMaxSize = parseInt(this.ctrl.panel.circleMaxSize, 10) || 30;
 
-    if (this.ctrl.data.valueRange === 0) {
+    if (this.ctrl.data[0].valueRange === 0) {
       return circleMaxSize;
     }
 
-    const dataFactor = (dataPointValue - this.ctrl.data.lowestValue) / this.ctrl.data.valueRange;
+    const dataFactor = (dataPointValue - this.ctrl.data[0].lowestValue) / this.ctrl.data[0].valueRange;
     const circleSizeRange = circleMaxSize - circleMinSize;
 
     return (circleSizeRange * dataFactor) + circleMinSize;
@@ -260,8 +290,8 @@ export default class WorldMap {
   }
 
   getColor(value) {
-    for (let index = this.ctrl.data.thresholds.length; index > 0; index -= 1) {
-      if (value >= this.ctrl.data.thresholds[index - 1]) {
+    for (let index = this.ctrl.data[0].thresholds.length; index > 0; index -= 1) {
+      if (value >= this.ctrl.data[0].thresholds[index - 1]) {
         return this.ctrl.panel.colors[index];
       }
     }
@@ -298,12 +328,11 @@ export default class WorldMap {
     this.map.removeLayer(this.circlesLayer);
   }
 
-  removeLines() {
-    this.map.removeLayer(this.linesLayer);
+  removeLines(layer) {
+    this.map.removeLayer(layer);
   }
 
   showTrail(flag) {
-    console.log('CTRL: setTrail %o', flag);
     this.drawTrail = flag;
     if (!this.drawTrail) {
       this.clearPolyLine();
@@ -320,6 +349,10 @@ export default class WorldMap {
   setPathColors(color1, color2) {
     this.pathColor1 = color1;
     this.pathColor2 = color2;
+  }
+
+  setExtraLineColors(colors) {
+    this.extraLineColors = colors;
   }
 
   setShowAsAntPath(flag) {

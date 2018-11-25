@@ -204,6 +204,11 @@
       <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.longitudeField"
         ng-change="ctrl.refresh()" ng-model-onblur />
     </div>
+    <div class="gf-form" ng-show="ctrl.panel.locationData === 'table'">
+      <label class="gf-form-label width-12">Marker Field</label>
+      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.markerField"
+        ng-change="ctrl.refresh()" ng-model-onblur />
+    </div>
     <div class="gf-form" ng-show="ctrl.panel.locationData === 'geohash'">
       <label class="gf-form-label width-12">Location Name Field</label>
       <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.esLocationName" ng-change="ctrl.refresh()"
@@ -242,6 +247,18 @@
       <label class="gf-form-label width-10">Pulse Colour</label>
       <spectrum-picker class="gf-form-input width-3" ng-model="ctrl.panel.antPathPulseColor"
         ng-change="ctrl.changeAntpathOptions()"></spectrum-picker>
+    </div>
+  </div>
+</div>
+  <div class="editor-row">
+    <div class="section gf-form-group">
+      <h5 class="section-heading">Extra Line Colors</h5>
+    <div class="gf-form" >
+      <label class="gf-form-label width-10">Extra Line Colors</label>
+      <spectrum-picker class="gf-form-input width-3" ng-repeat="exCol in ctrl.panel.extraLineColors track by $index" ng-model="ctrl.panel.extraLineColors[$index]"
+        ng-change="ctrl.changeExtraLineColors()"></spectrum-picker>
+      <button type="button" class="btn navbar-button" ng-click="ctrl.addExtraLineColor()">+</button>
+      <button type="button" class="btn navbar-button" ng-click="ctrl.removeLastExtraLineColor()">-</button>
     </div>
   </div>
 

@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn', 'lodash', './map_renderer', './data_formatter', './css/worldmap-panel.css!'], function (_export, _context) {
+System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn', 'lodash', './map_renderer', './data_formatter', './css/worldmap-panel.css!', './colors'], function (_export, _context) {
   "use strict";
 
-  var MetricsPanelCtrl, TimeSeries, kbn, _, mapRenderer, DataFormatter, _createClass, panelDefaults, mapCenters, WorldmapCtrl;
+  var MetricsPanelCtrl, TimeSeries, kbn, _, mapRenderer, DataFormatter, Colors, _createClass, panelDefaults, mapCenters, WorldmapCtrl;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -48,7 +48,9 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
       mapRenderer = _map_renderer.default;
     }, function (_data_formatter) {
       DataFormatter = _data_formatter.default;
-    }, function (_cssWorldmapPanelCss) {}],
+    }, function (_cssWorldmapPanelCss) {}, function (_colors) {
+      Colors = _colors.default;
+    }],
     execute: function () {
       _createClass = function () {
         function defineProperties(target, props) {
@@ -90,6 +92,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         useCustomAntPathColor: false,
         antPathColor: 'rgba(50, 172, 45, 0.97)',
         antPathPulseColor: '#FFFFFF',
+        extraLineColors: ['#ff4d4d', '#1aff8c'],
         mapTileServer: 'CartoDB',
         esMetric: 'Count',
         decimals: 0,
@@ -101,7 +104,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           geohashField: 'geohash',
           latitudeField: 'latitude',
           longitudeField: 'longitude',
-          metricField: 'metric'
+          metricField: 'metric',
+          markerField: 'marker'
         }
 
       };
@@ -128,7 +132,6 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _this.currentTileServer = _this.panel.mapTileServer;
           _this.setMapProvider(contextSrv);
 
-          console.log('onInit current = %o', _this.currentTileServer);
           _this.dataFormatter = new DataFormatter(_this, kbn);
 
           _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
@@ -160,7 +163,6 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         }, {
           key: 'changeMapProvider',
           value: function changeMapProvider() {
-            console.log('This = %o, Current = %o', this.panel.mapTileServer, this.currentTileServer);
             if (this.panel.mapTileServer !== this.currentTileServer) {
               this.setMapProvider(this.context);
               if (this.map) {
@@ -244,7 +246,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         }, {
           key: 'onInitEditMode',
           value: function onInitEditMode() {
-            this.addEditorTab('Worldmap', 'public/plugins/ravithb-grafana-custom-worldmap-panel/partials/editor.html', 2);
+            this.addEditorTab('Worldmap', 'public/plugins/grafana-custom-worldmap-panel/partials/editor.html', 2);
           }
         }, {
           key: 'onDataReceived',
@@ -273,7 +275,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
 
             this.updateThresholdData();
 
-            if (this.data.length && this.panel.mapCenter === 'Last GeoHash') {
+            if (this.data && this.data.length > 0 && this.data[0].length && this.panel.mapCenter === 'Last GeoHash') {
               this.centerOnLastGeoHash();
             } else {
               this.render();
@@ -282,8 +284,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         }, {
           key: 'centerOnLastGeoHash',
           value: function centerOnLastGeoHash() {
-            mapCenters[this.panel.mapCenter].mapCenterLatitude = _.last(this.data).locationLatitude;
-            mapCenters[this.panel.mapCenter].mapCenterLongitude = _.last(this.data).locationLongitude;
+            mapCenters[this.panel.mapCenter].mapCenterLatitude = _.last(this.data[0]).locationLatitude;
+            mapCenters[this.panel.mapCenter].mapCenterLongitude = _.last(this.data[0]).locationLongitude;
             this.setNewMapCenter();
           }
         }, {
@@ -354,6 +356,30 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             this.render();
           }
         }, {
+          key: 'changePathColors',
+          value: function changePathColors() {
+            this.map.setPathColors(this.panel.pathColor1, this.panel.pathColor2);
+          }
+        }, {
+          key: 'addExtraLineColor',
+          value: function addExtraLineColor() {
+            this.panel.extraLineColors.push(Colors.random());
+            this.render();
+          }
+        }, {
+          key: 'removeLastExtraLineColor',
+          value: function removeLastExtraLineColor() {
+            if (this.panel.extraLineColors.length > 0) {
+              this.panel.extraLineColors.pop();
+              this.render();
+            }
+          }
+        }, {
+          key: 'changeExtraLineColors',
+          value: function changeExtraLineColors() {
+            this.map.setExtraLineColors(this.panel.extraLineColors);
+          }
+        }, {
           key: 'changeThresholds',
           value: function changeThresholds() {
             this.updateThresholdData();
@@ -363,14 +389,17 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         }, {
           key: 'updateThresholdData',
           value: function updateThresholdData() {
-            this.data.thresholds = this.panel.thresholds.split(',').map(function (strValue) {
+            if (!this.data || this.data.length === 0) {
+              return;
+            }
+            this.data[0].thresholds = this.panel.thresholds.split(',').map(function (strValue) {
               return Number(strValue.trim());
             });
-            while (_.size(this.panel.colors) > _.size(this.data.thresholds) + 1) {
+            while (_.size(this.panel.colors) > _.size(this.data[0].thresholds) + 1) {
               // too many colors. remove the last one.
               this.panel.colors.pop();
             }
-            while (_.size(this.panel.colors) < _.size(this.data.thresholds) + 1) {
+            while (_.size(this.panel.colors) < _.size(this.data[0].thresholds) + 1) {
               // not enough colors. add one.
               var newColor = 'rgba(50, 172, 45, 0.97)';
               this.panel.colors.push(newColor);
