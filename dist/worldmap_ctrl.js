@@ -121,7 +121,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
       WorldmapCtrl = function (_MetricsPanelCtrl) {
         _inherits(WorldmapCtrl, _MetricsPanelCtrl);
 
-        function WorldmapCtrl($scope, $injector, contextSrv) {
+        function WorldmapCtrl($scope, $injector, contextSrv, datasourceSrv, variableSrv) {
           _classCallCheck(this, WorldmapCtrl);
 
           var _this = _possibleConstructorReturn(this, (WorldmapCtrl.__proto__ || Object.getPrototypeOf(WorldmapCtrl)).call(this, $scope, $injector));
@@ -131,6 +131,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           _this.tileServer = _this.panel.mapTileServer;
           _this.currentTileServer = _this.panel.mapTileServer;
           _this.setMapProvider(contextSrv);
+          _this.variableSrv = variableSrv;
 
           _this.dataFormatter = new DataFormatter(_this, kbn);
 
@@ -412,6 +413,26 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
 
             if (this.panel.locationData === 'geohash') {
               this.render();
+            }
+          }
+        }, {
+          key: 'onBoundsChange',
+          value: function onBoundsChange(boundsObj) {
+            var boundsJson = JSON.stringify(boundsObj);
+            var boundsVar = _.find(this.variableSrv.variables, function (check) {
+              return check.name === 'bounds';
+            });
+            if (boundsVar) {
+              this.variableSrv.setOptionAsCurrent(boundsVar, {
+                text: boundsJson,
+                value: boundsJson
+              });
+              this.variableSrv.variableUpdated(boundsVar, true);
+              // console.log('variable set to %o', boundsJson);
+              // console.log(boundsVar);
+              // console.log(this);
+            } else {
+              console.log("no variable 'bounds'");
             }
           }
         }, {

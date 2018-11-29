@@ -3,7 +3,8 @@ import _ from 'lodash';
 import L from './libs/leaflet';
 /* eslint-disable id-length, no-unused-vars */
 import {antPath} from './libs/leaflet-ant-path';
-/* eslint class-methods-use-this: ["error", { "exceptMethods": ["toCoords"] }] */
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["toCoords","flattenBounds"] }] */
+/* eslint-disable no-extra-bind */ 
 import Colors from './colors';
 
 
@@ -47,14 +48,13 @@ export default class WorldMap {
     this.antPathColor = this.ctrl.panel.antPathColor;
     this.antPathPulseColor = this.ctrl.panel.antPathPulseColor;
     this.extraLineColors = this.ctrl.panel.extraLineColors;
-    this.pathColor2 = this.ctrl.panel.pathColor2;
 
     this.showAsAntPath = true;
     return this.createMap();
   }
 
   createMap() {
-    window.L.Icon.Default.imagePath = '/public/plugins/grafana-custom-worldmap-panel/images/';
+    window.L.Icon.Default.imagePath = 'public/plugins/grafana-custom-worldmap-panel/images/';
     const mapCenter = window.L.latLng(parseFloat(this.ctrl.panel.mapCenterLatitude), parseFloat(this.ctrl.panel.mapCenterLongitude));
     this.map = window.L.map(this.mapContainer, { worldCopyJump: true, center: mapCenter, zoom: parseInt(this.ctrl.panel.initialZoom, 10) || 1 });
     this.setMouseWheelZoom();
@@ -67,6 +67,10 @@ export default class WorldMap {
       detectRetina: true,
       attribution: selectedTileServer.attribution
     }).addTo(this.map);
+
+    this.map.on('zoomend', this.onZoom);
+    this.map.on('moveend', this.onZoom);
+    this.map.on('resize', this.onResize);
   }
 
   createLegend() {
@@ -368,5 +372,39 @@ export default class WorldMap {
     if (this.circlesLayer) this.removeCircles();
     if (this.legend) this.removeLegend();
     this.map.remove();
+  }
+
+  onMove = ((moveEvent) => {
+    if (!moveEvent.target) {
+      return;
+    }
+    this.ctrl.onBoundsChange(this.flattenBounds(moveEvent.target.getBounds(), 'move'));
+  }).bind(this);
+
+  onZoom = ((zoomEvent) => {
+    if (!zoomEvent.target) {
+      return;
+    }
+    this.ctrl.onBoundsChange(this.flattenBounds(zoomEvent.target.getBounds(), 'zoom'));
+  }).bind(this);
+
+  onResize = ((resizeEvent) => {
+    if (!resizeEvent.target) {
+      return;
+    }
+    this.ctrl.onBoundsChange(this.flattenBounds(resizeEvent.target.getBounds(), 'resize'));
+  }).bind(this);
+
+  flattenBounds(bounds, trigger) {
+    if (!bounds) {
+      return {};
+    }
+    return {
+      nortWest: { lat: bounds.getNorthWest().lat, lng: bounds.getNorthWest().lng},
+      northEast: { lat: bounds.getNorthEast().lat, lng: bounds.getNorthEast().lng},
+      southEast: { lat: bounds.getSouthEast().lat, lng: bounds.getSouthEast().lng},
+      southWest: { lat: bounds.getSouthWest().lat, lng: bounds.getSouthWest().lng},
+      triggeredBy: trigger
+    };
   }
 }

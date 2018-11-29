@@ -41,6 +41,14 @@ module.exports = (grunt) => {
       },
     },
 
+    watch: {
+      rebuild_all: {
+        files: ['src/**/*', 'plugin.json'],
+        tasks: ['default'],
+        options: {spawn: false}
+      },
+    },
+
     babel: {
       options: {
         sourceMap: true,

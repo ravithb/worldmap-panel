@@ -61,13 +61,14 @@ const mapCenters = {
 export default class WorldmapCtrl extends MetricsPanelCtrl {
   currentTileServer;
   context;
-  constructor($scope, $injector, contextSrv) {
+  constructor($scope, $injector, contextSrv, datasourceSrv, variableSrv) {
     super($scope, $injector);
     this.context = contextSrv;
     _.defaults(this.panel, panelDefaults);
     this.tileServer = this.panel.mapTileServer;
     this.currentTileServer = this.panel.mapTileServer;
     this.setMapProvider(contextSrv);
+    this.variableSrv = variableSrv;
 
     this.dataFormatter = new DataFormatter(this, kbn);
 
@@ -322,6 +323,25 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
 
     if (this.panel.locationData === 'geohash') {
       this.render();
+    }
+  }
+
+  onBoundsChange(boundsObj) {
+    const boundsJson = JSON.stringify(boundsObj);
+    const boundsVar = _.find(this.variableSrv.variables, (check) => {
+      return check.name === 'bounds';
+    });
+    if (boundsVar) {
+      this.variableSrv.setOptionAsCurrent(boundsVar, {
+        text: boundsJson,
+        value: boundsJson
+      });
+      this.variableSrv.variableUpdated(boundsVar, true);
+      // console.log('variable set to %o', boundsJson);
+      // console.log(boundsVar);
+      // console.log(this);
+    } else {
+      console.log("no variable 'bounds'");
     }
   }
 
