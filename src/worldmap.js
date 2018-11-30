@@ -130,8 +130,8 @@ export default class WorldMap {
         const extraLineLayers = this.drawExtraLines();
         const combined = Array.from(extraLineLayers);
         combined.push(linesLayer);
-        const group = window.L.featureGroup(combined);
-        this.map.fitBounds(group.getBounds());
+        // const group = window.L.featureGroup(combined);
+        // this.map.fitBounds(group.getBounds());
       }
     } else {
       this.updateCircles(data);
@@ -164,6 +164,9 @@ export default class WorldMap {
     }
     if (this.markerLayers) {
       this.markerLayers.forEach((layer) => {
+        if (layer.getPopup()) {
+          layer.unbindPopup();
+        }
         this.removeLines(layer);
       });
     }
@@ -184,8 +187,22 @@ export default class WorldMap {
     dataset.forEach((dataPoint) => {
       if (dataPoint.marker) {
         const marker = window.L.marker([dataPoint.locationLatitude, dataPoint.locationLongitude], {
-          title: dataPoint.marker
+          title: dataPoint.marker,
+          draggable: false,
         }).addTo(this.map);
+        const popup = window.L.popup().setContent('<b style="color: #666666">' + dataPoint.marker + '</b>');
+        marker.bindPopup(popup);
+        marker.on('click', (evt) => {
+          if (marker.isPopupOpen() === false) {
+            marker.openPopup();
+          }
+        });
+        marker.on('mouseover', (evt) => {
+          if (marker.isPopupOpen() === false) {
+            marker.openPopup();
+          }
+        });
+
         self.markerLayers.push(marker);
       }
     });

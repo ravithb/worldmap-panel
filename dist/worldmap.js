@@ -197,8 +197,8 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
                 var extraLineLayers = this.drawExtraLines();
                 var combined = Array.from(extraLineLayers);
                 combined.push(linesLayer);
-                var group = window.L.featureGroup(combined);
-                this.map.fitBounds(group.getBounds());
+                // const group = window.L.featureGroup(combined);
+                // this.map.fitBounds(group.getBounds());
               }
             } else {
               this.updateCircles(data);
@@ -237,6 +237,9 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
             }
             if (this.markerLayers) {
               this.markerLayers.forEach(function (layer) {
+                if (layer.getPopup()) {
+                  layer.unbindPopup();
+                }
                 _this5.removeLines(layer);
               });
             }
@@ -261,8 +264,22 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
             dataset.forEach(function (dataPoint) {
               if (dataPoint.marker) {
                 var marker = window.L.marker([dataPoint.locationLatitude, dataPoint.locationLongitude], {
-                  title: dataPoint.marker
+                  title: dataPoint.marker,
+                  draggable: false
                 }).addTo(_this6.map);
+                var popup = window.L.popup().setContent('<b style="color: #666666">' + dataPoint.marker + '</b>');
+                marker.bindPopup(popup);
+                marker.on('click', function (evt) {
+                  if (marker.isPopupOpen() === false) {
+                    marker.openPopup();
+                  }
+                });
+                marker.on('mouseover', function (evt) {
+                  if (marker.isPopupOpen() === false) {
+                    marker.openPopup();
+                  }
+                });
+
                 self.markerLayers.push(marker);
               }
             });
