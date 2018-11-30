@@ -32,6 +32,7 @@ const panelDefaults = {
   antPathColor: 'rgba(50, 172, 45, 0.97)',
   antPathPulseColor: '#FFFFFF',
   extraLineColors: ['#ff4d4d', '#1aff8c'],
+  extraLineSecondaryColors: ['#eeeeee', '#eeeeee'],
   mapTileServer: 'CartoDB',
   esMetric: 'Count',
   decimals: 0,
@@ -280,18 +281,26 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
 
   addExtraLineColor() {
     this.panel.extraLineColors.push(Colors.random());
+    this.panel.extraLineSecondaryColors.push(Colors.random());
     this.render();
   }
 
   removeLastExtraLineColor() {
     if (this.panel.extraLineColors.length > 0) {
-      this.panel.extraLineColors.pop();
+      const removed = this.panel.extraLineColors.pop();
+      if (removed && this.panel.extraLineSecondaryColors.length > 0) {
+        this.panel.extraLineSecondaryColors.pop();
+      }
       this.render();
     }
   }
 
   changeExtraLineColors() {
     this.map.setExtraLineColors(this.panel.extraLineColors);
+  }
+
+  changeExtraLineSecondaryColors() {
+    this.map.setExtraLineSecondaryColors(this.panel.extraLineSecondaryColors);
   }
 
   changeThresholds() {

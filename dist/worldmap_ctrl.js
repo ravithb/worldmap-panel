@@ -93,6 +93,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         antPathColor: 'rgba(50, 172, 45, 0.97)',
         antPathPulseColor: '#FFFFFF',
         extraLineColors: ['#ff4d4d', '#1aff8c'],
+        extraLineSecondaryColors: ['#eeeeee', '#eeeeee'],
         mapTileServer: 'CartoDB',
         esMetric: 'Count',
         decimals: 0,
@@ -365,13 +366,17 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           key: 'addExtraLineColor',
           value: function addExtraLineColor() {
             this.panel.extraLineColors.push(Colors.random());
+            this.panel.extraLineSecondaryColors.push(Colors.random());
             this.render();
           }
         }, {
           key: 'removeLastExtraLineColor',
           value: function removeLastExtraLineColor() {
             if (this.panel.extraLineColors.length > 0) {
-              this.panel.extraLineColors.pop();
+              var removed = this.panel.extraLineColors.pop();
+              if (removed && this.panel.extraLineSecondaryColors.length > 0) {
+                this.panel.extraLineSecondaryColors.pop();
+              }
               this.render();
             }
           }
@@ -379,6 +384,11 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           key: 'changeExtraLineColors',
           value: function changeExtraLineColors() {
             this.map.setExtraLineColors(this.panel.extraLineColors);
+          }
+        }, {
+          key: 'changeExtraLineSecondaryColors',
+          value: function changeExtraLineSecondaryColors() {
+            this.map.setExtraLineSecondaryColors(this.panel.extraLineSecondaryColors);
           }
         }, {
           key: 'changeThresholds',

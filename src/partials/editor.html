@@ -260,6 +260,11 @@
       <button type="button" class="btn navbar-button" ng-click="ctrl.addExtraLineColor()">+</button>
       <button type="button" class="btn navbar-button" ng-click="ctrl.removeLastExtraLineColor()">-</button>
     </div>
+    <div class="gf-form"  ng-show="ctrl.panel.useCustomAntPathColor">
+      <label class="gf-form-label width-10">Extra Line Secondary Colors</label>
+      <spectrum-picker class="gf-form-input width-3" ng-repeat="exCol in ctrl.panel.extraLineSecondaryColors track by $index" ng-model="ctrl.panel.extraLineSecondaryColors[$index]"
+        ng-change="ctrl.changeExtraLineSecondaryColors()"></spectrum-picker>
+    </div>
   </div>
 
   <div class="section gf-form-group">

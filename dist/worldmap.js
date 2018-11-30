@@ -105,6 +105,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
           this.antPathColor = this.ctrl.panel.antPathColor;
           this.antPathPulseColor = this.ctrl.panel.antPathPulseColor;
           this.extraLineColors = this.ctrl.panel.extraLineColors;
+          this.extraLineSecondaryColors = this.ctrl.panel.extraLineSecondaryColors;
 
           this.showAsAntPath = true;
           return this.createMap();
@@ -277,9 +278,24 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
 
             for (var dataIdx = 1; dataIdx < this.ctrl.data.length; dataIdx += 1) {
               var lineColor = this.extraLineColors && this.extraLineColors.length >= dataIdx ? this.extraLineColors[dataIdx - 1] : Colors.random();
-              var layer = window.L.polyline(self.toCoords(this.ctrl.data[dataIdx]), {
-                color: lineColor
-              }).addTo(this.map);
+              var secondaryLineColor = this.extraLineSecondaryColors && this.extraLineSecondaryColors.length >= dataIdx ? this.extraLineSecondaryColors[dataIdx - 1] : Colors.random();
+              var layer = null;
+
+              if (this.showAsAntPath) {
+                layer = window.L.polyline.antPath(self.toCoords(this.ctrl.data[dataIdx]), {
+                  'delay': this.antPathDelay,
+                  'dashArray': [10, 20],
+                  'weight': 5,
+                  'color': lineColor,
+                  'pulseColor': this.useCustomAntPathColor ? this.secondaryLineColor : '#FFFFFF',
+                  'paused': false,
+                  'reverse': false
+                }).addTo(this.map);
+              } else {
+                layer = window.L.polyline(self.toCoords(this.ctrl.data[dataIdx]), {
+                  color: lineColor
+                }).addTo(this.map);
+              }
               this.extraLineLayers.push(layer);
               self.drawMarkers(this.ctrl.data[dataIdx]);
               return this.extraLineLayers;
@@ -455,6 +471,11 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
           key: 'setExtraLineColors',
           value: function setExtraLineColors(colors) {
             this.extraLineColors = colors;
+          }
+        }, {
+          key: 'setExtraLineSecondaryColors',
+          value: function setExtraLineSecondaryColors(colors) {
+            this.extraLineSecondaryColors = colors;
           }
         }, {
           key: 'setShowAsAntPath',
