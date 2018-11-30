@@ -62,6 +62,7 @@ const mapCenters = {
 export default class WorldmapCtrl extends MetricsPanelCtrl {
   currentTileServer;
   context;
+
   constructor($scope, $injector, contextSrv, datasourceSrv, variableSrv) {
     super($scope, $injector);
     this.context = contextSrv;
@@ -335,7 +336,12 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     }
   }
 
+
   onBoundsChange(boundsObj) {
+    if (boundsObj.maxChangeDelta < 0.5) {
+      console.log('bounds change delta %o is too small to update variable', boundsObj.maxChangeDelta);
+      return;
+    }
     const boundsJson = JSON.stringify(boundsObj);
     const boundsVar = _.find(this.variableSrv.variables, (check) => {
       return check.name === 'bounds';

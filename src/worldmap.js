@@ -49,7 +49,7 @@ export default class WorldMap {
     this.antPathPulseColor = this.ctrl.panel.antPathPulseColor;
     this.extraLineColors = this.ctrl.panel.extraLineColors;
     this.extraLineSecondaryColors = this.ctrl.panel.extraLineSecondaryColors;
-
+    this.lastBounds = null;
     this.showAsAntPath = true;
     return this.createMap();
   }
@@ -437,12 +437,39 @@ export default class WorldMap {
     if (!bounds) {
       return {};
     }
+    const maxChangeDelta = this.calculateMaxChangeDelta(bounds);
+
     return {
       nortWest: { lat: bounds.getNorthWest().lat, lng: bounds.getNorthWest().lng},
       northEast: { lat: bounds.getNorthEast().lat, lng: bounds.getNorthEast().lng},
       southEast: { lat: bounds.getSouthEast().lat, lng: bounds.getSouthEast().lng},
       southWest: { lat: bounds.getSouthWest().lat, lng: bounds.getSouthWest().lng},
-      triggeredBy: trigger
+      triggeredBy: trigger,
+      maxChangeDelta: maxChangeDelta
     };
+  }
+
+  calculateMaxChangeDelta(bounds) {
+    let maxChangeDelta = 0;
+    if (this.lastBounds) {
+      const nwDist = window.L.CRS.Simple.distance(bounds.getNorthWest(), this.lastBounds.getNorthWest());
+      if (nwDist > maxChangeDelta) {
+        maxChangeDelta = nwDist;
+      }
+      const neDist = window.L.CRS.Simple.distance(bounds.getNorthEast(), this.lastBounds.getNorthEast());
+      if (neDist > maxChangeDelta) {
+        maxChangeDelta = neDist;
+      }
+      const seDist = window.L.CRS.Simple.distance(bounds.getSouthEast(), this.lastBounds.getSouthEast());
+      if (seDist > maxChangeDelta) {
+        maxChangeDelta = seDist;
+      }
+      const swDist = window.L.CRS.Simple.distance(bounds.getSouthWest(), this.lastBounds.getSouthWest());
+      if (swDist > maxChangeDelta) {
+        maxChangeDelta = swDist;
+      }
+      return maxChangeDelta;
+    }
+    this.lastBounds = bounds;
   }
 }
