@@ -193,12 +193,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
               this.createCircles(data);
               this.clearPolyLine();
               if (this.drawTrail) {
-                var linesLayer = this.drawPolyLine();
                 var extraLineLayers = this.drawExtraLines();
-                var combined = Array.from(extraLineLayers);
-                combined.push(linesLayer);
-                // const group = window.L.featureGroup(combined);
-                // this.map.fitBounds(group.getBounds());
               }
             } else {
               this.updateCircles(data);

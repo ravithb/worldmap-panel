@@ -149,7 +149,6 @@ export default class DataFormatter {
           let key;
           let longitude;
           let latitude;
-          
 
           if (this.ctrl.panel.tableQueryOptions.queryType === 'geohash') {
             try {

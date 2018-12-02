@@ -79,6 +79,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         valueName: 'total',
         circleMinSize: 2,
         circleMaxSize: 30,
+        boundsChangeTriggerDelta: 0.5,
         locationData: 'countries',
         thresholds: '0,10',
         colors: ['rgba(245, 54, 54, 0.9)', 'rgba(237, 129, 40, 0.89)', 'rgba(50, 172, 45, 0.97)'],
@@ -161,6 +162,13 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                 break;
             }
             this.setMapSaturationClass();
+          }
+        }, {
+          key: 'changeBoundsChangeTriggerDelta',
+          value: function changeBoundsChangeTriggerDelta() {
+            if (this.panel.boundsChangeTriggerDelta < 0 || this.panel.boundsChangeTriggerDelta > 3) {
+              this.panel.boundsChangeTriggerDelta = 0.5;
+            }
           }
         }, {
           key: 'changeMapProvider',

@@ -126,12 +126,7 @@ export default class WorldMap {
       this.createCircles(data);
       this.clearPolyLine();
       if (this.drawTrail) {
-        const linesLayer = this.drawPolyLine();
         const extraLineLayers = this.drawExtraLines();
-        const combined = Array.from(extraLineLayers);
-        combined.push(linesLayer);
-        // const group = window.L.featureGroup(combined);
-        // this.map.fitBounds(group.getBounds());
       }
     } else {
       this.updateCircles(data);

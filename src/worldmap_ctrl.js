@@ -18,6 +18,7 @@ const panelDefaults = {
   valueName: 'total',
   circleMinSize: 2,
   circleMaxSize: 30,
+  boundsChangeTriggerDelta: 0.5,
   locationData: 'countries',
   thresholds: '0,10',
   colors: ['rgba(245, 54, 54, 0.9)', 'rgba(237, 129, 40, 0.89)', 'rgba(50, 172, 45, 0.97)'],
@@ -96,6 +97,12 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
         break;
     }
     this.setMapSaturationClass();
+  }
+
+  changeBoundsChangeTriggerDelta() {
+    if (this.panel.boundsChangeTriggerDelta < 0 || this.panel.boundsChangeTriggerDelta > 3) {
+      this.panel.boundsChangeTriggerDelta = 0.5;
+    }
   }
 
   changeMapProvider() {
@@ -335,7 +342,6 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
       this.render();
     }
   }
-
 
   onBoundsChange(boundsObj) {
     if (boundsObj.maxChangeDelta < 0.5) {
