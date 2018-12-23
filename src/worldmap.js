@@ -4,7 +4,7 @@ import L from './libs/leaflet';
 /* eslint-disable id-length, no-unused-vars */
 import {antPath} from './libs/leaflet-ant-path';
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["toCoords","flattenBounds"] }] */
-/* eslint-disable no-extra-bind */ 
+/* eslint-disable no-extra-bind */
 import Colors from './colors';
 
 
@@ -133,6 +133,12 @@ export default class WorldMap {
     }
   }
 
+  focus() {
+    if (this.map) {
+      this.map.getContainer().focus();
+    }
+  }
+
   createCircles(data) {
     const circles = [];
     data.forEach((dataPoint) => {
@@ -188,6 +194,7 @@ export default class WorldMap {
         const popup = window.L.popup().setContent('<b style="color: #666666">' + dataPoint.marker + '</b>');
         marker.bindPopup(popup);
         marker.on('click', (evt) => {
+          console.log('marker click');
           if (marker.isPopupOpen() === false) {
             marker.openPopup();
           }
@@ -223,7 +230,7 @@ export default class WorldMap {
           'dashArray': [10, 20],
           'weight': 5,
           'color': lineColor,
-          'pulseColor': (this.useCustomAntPathColor ? this.secondaryLineColor : '#FFFFFF'),
+          'pulseColor': (this.useCustomAntPathColor ? secondaryLineColor : '#FFFFFF'),
           'paused': false,
           'reverse': false
         }).addTo(this.map);
@@ -234,8 +241,8 @@ export default class WorldMap {
       }
       this.extraLineLayers.push(layer);
       self.drawMarkers(this.ctrl.data[dataIdx]);
-      return this.extraLineLayers;
     }
+    return this.extraLineLayers;
   }
 
   drawPolyLine() {

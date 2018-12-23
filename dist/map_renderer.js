@@ -23,6 +23,7 @@ System.register(['./css/leaflet.css!', './worldmap'], function (_export, _contex
         ctrl.map = new WorldMap(ctrl, mapContainer[0]);
       }
 
+      ctrl.map.focus();
       ctrl.map.resize();
 
       if (ctrl.mapCenterMoved) ctrl.map.panToMapCenter();

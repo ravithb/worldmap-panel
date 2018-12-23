@@ -200,6 +200,13 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
             }
           }
         }, {
+          key: 'focus',
+          value: function focus() {
+            if (this.map) {
+              this.map.getContainer().focus();
+            }
+          }
+        }, {
           key: 'createCircles',
           value: function createCircles(data) {
             var _this4 = this;
@@ -265,6 +272,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
                 var popup = window.L.popup().setContent('<b style="color: #666666">' + dataPoint.marker + '</b>');
                 marker.bindPopup(popup);
                 marker.on('click', function (evt) {
+                  console.log('marker click');
                   if (marker.isPopupOpen() === false) {
                     marker.openPopup();
                   }
@@ -299,7 +307,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
                   'dashArray': [10, 20],
                   'weight': 5,
                   'color': lineColor,
-                  'pulseColor': this.useCustomAntPathColor ? this.secondaryLineColor : '#FFFFFF',
+                  'pulseColor': this.useCustomAntPathColor ? secondaryLineColor : '#FFFFFF',
                   'paused': false,
                   'reverse': false
                 }).addTo(this.map);
@@ -310,8 +318,8 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
               }
               this.extraLineLayers.push(layer);
               self.drawMarkers(this.ctrl.data[dataIdx]);
-              return this.extraLineLayers;
             }
+            return this.extraLineLayers;
           }
         }, {
           key: 'drawPolyLine',
