@@ -173,6 +173,7 @@ export default class DataFormatter {
             locationLatitude: latitude,
             locationLongitude: longitude,
             marker: datapoint[this.ctrl.panel.tableQueryOptions.markerField],
+            url: datapoint[this.ctrl.panel.tableQueryOptions.urlField],
             value: datapoint[this.ctrl.panel.tableQueryOptions.metricField],
             valueFormatted: datapoint[this.ctrl.panel.tableQueryOptions.metricField],
             valueRounded: 0

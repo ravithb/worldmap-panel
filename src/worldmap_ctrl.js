@@ -46,7 +46,8 @@ const panelDefaults = {
     latitudeField: 'latitude',
     longitudeField: 'longitude',
     metricField: 'metric',
-    markerField: 'marker'
+    markerField: 'marker',
+    urlField: 'url'
   }
 
 };

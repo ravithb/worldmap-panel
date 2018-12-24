@@ -194,7 +194,6 @@ export default class WorldMap {
         const popup = window.L.popup().setContent('<b style="color: #666666">' + dataPoint.marker + '</b>');
         marker.bindPopup(popup);
         marker.on('click', (evt) => {
-          console.log('marker click');
           if (marker.isPopupOpen() === false) {
             marker.openPopup();
           }
@@ -292,6 +291,9 @@ export default class WorldMap {
       fillOpacity: 0.5,
       location: dataPoint.key
     });
+    if (dataPoint.url) {
+      circle.on('click', () => { window.location.replace(dataPoint.url); });
+    }
 
     this.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
     return circle;
