@@ -107,7 +107,8 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           latitudeField: 'latitude',
           longitudeField: 'longitude',
           metricField: 'metric',
-          markerField: 'marker'
+          markerField: 'marker',
+          urlField: 'url'
         }
 
       };

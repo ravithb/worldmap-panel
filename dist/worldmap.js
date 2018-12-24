@@ -272,7 +272,6 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
                 var popup = window.L.popup().setContent('<b style="color: #666666">' + dataPoint.marker + '</b>');
                 marker.bindPopup(popup);
                 marker.on('click', function (evt) {
-                  console.log('marker click');
                   if (marker.isPopupOpen() === false) {
                     marker.openPopup();
                   }
@@ -376,6 +375,11 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
               fillOpacity: 0.5,
               location: dataPoint.key
             });
+            if (dataPoint.url) {
+              circle.on('click', function () {
+                window.location.replace(dataPoint.url);
+              });
+            }
 
             this.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
             return circle;
