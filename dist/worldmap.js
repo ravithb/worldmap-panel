@@ -381,7 +381,15 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
               });
             }
 
-            this.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
+            var value = dataPoint.valueRounded;
+            var label = '';
+            if (dataPoint.label) {
+              label = dataPoint.label;
+            } else {
+              var unit = value && value === 1 ? this.ctrl.panel.unitSingular : this.ctrl.panel.unitPlural;
+              label = (dataPoint.locationName + ': ' + value + ' ' + (unit || '')).trim();
+            }
+            this.createPopup(circle, label);
             return circle;
           }
         }, {
@@ -401,9 +409,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
           }
         }, {
           key: 'createPopup',
-          value: function createPopup(circle, locationName, value) {
-            var unit = value && value === 1 ? this.ctrl.panel.unitSingular : this.ctrl.panel.unitPlural;
-            var label = (locationName + ': ' + value + ' ' + (unit || '')).trim();
+          value: function createPopup(circle, label) {
             circle.bindPopup(label, { 'offset': window.L.point(0, -2), 'className': 'worldmap-popup', 'closeButton': this.ctrl.panel.stickyLabels });
 
             circle.on('mouseover', function onMouseOver(evt) {

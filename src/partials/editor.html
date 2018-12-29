@@ -214,6 +214,11 @@
       <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.urlField"
         ng-change="ctrl.refresh()" ng-model-onblur />
     </div>
+    <div class="gf-form" ng-show="ctrl.panel.locationData === 'table'">
+      <label class="gf-form-label width-12">Custom Label Field</label>
+      <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.customLabelField"
+        ng-change="ctrl.refresh()" ng-model-onblur />
+    </div>
     <div class="gf-form" ng-show="ctrl.panel.locationData === 'geohash'">
       <label class="gf-form-label width-12">Location Name Field</label>
       <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.esLocationName" ng-change="ctrl.refresh()"

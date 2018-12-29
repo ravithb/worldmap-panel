@@ -108,6 +108,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           longitudeField: 'longitude',
           metricField: 'metric',
           markerField: 'marker',
+          customLabelField: 'label',
           urlField: 'url'
         }
 

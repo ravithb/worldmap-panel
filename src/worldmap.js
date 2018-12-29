@@ -295,7 +295,15 @@ export default class WorldMap {
       circle.on('click', () => { window.location.replace(dataPoint.url); });
     }
 
-    this.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
+    const value = dataPoint.valueRounded;
+    let label = '';
+    if (dataPoint.label) {
+      label = dataPoint.label;
+    } else {
+      const unit = value && value === 1 ? this.ctrl.panel.unitSingular : this.ctrl.panel.unitPlural;
+      label = (dataPoint.locationName + ': ' + value + ' ' + (unit || '')).trim();
+    }
+    this.createPopup(circle, label);
     return circle;
   }
 
@@ -313,9 +321,7 @@ export default class WorldMap {
     return (circleSizeRange * dataFactor) + circleMinSize;
   }
 
-  createPopup(circle, locationName, value) {
-    const unit = value && value === 1 ? this.ctrl.panel.unitSingular : this.ctrl.panel.unitPlural;
-    const label = (locationName + ': ' + value + ' ' + (unit || '')).trim();
+  createPopup(circle, label) {
     circle.bindPopup(label, {'offset': window.L.point(0, -2), 'className': 'worldmap-popup', 'closeButton': this.ctrl.panel.stickyLabels});
 
     circle.on('mouseover', function onMouseOver(evt) {
