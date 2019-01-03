@@ -442,7 +442,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
               console.log('bounds change delta %o is too small to update variable', boundsObj.maxChangeDelta);
               return;
             }
-            var boundsJson = JSON.stringify(boundsObj);
+            var boundsJson = boundsObj;
             var boundsVar = _.find(this.variableSrv.variables, function (check) {
               return check.name === 'bounds';
             });
