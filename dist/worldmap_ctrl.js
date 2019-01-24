@@ -110,8 +110,11 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
           markerField: 'marker',
           customLabelField: 'label',
           urlField: 'url'
+        },
+        urlFollowOptions: {
+          openInNewWindow: true,
+          useHeadlessWindow: true
         }
-
       };
       mapCenters = {
         '(0°, 0°)': { mapCenterLatitude: 0, mapCenterLongitude: 0 },
@@ -458,6 +461,11 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             } else {
               console.log("no variable 'bounds'");
             }
+          }
+        }, {
+          key: 'notEmpty',
+          value: function notEmpty(url) {
+            return url && url.trim().length > 0;
           }
         }, {
           key: 'link',

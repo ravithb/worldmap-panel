@@ -376,9 +376,20 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
               location: dataPoint.key
             });
             if (dataPoint.url) {
-              circle.on('click', function () {
-                window.location.replace(dataPoint.url);
-              });
+              if (this.ctrl.panel.urlFollowOptions.openInNewWindow) {
+                var name = '_blank';
+                var specs = '';
+                if (this.ctrl.panel.urlFollowOptions.useHeadlessWindow) {
+                  specs = 'menubar=0,resizable=1,location=0,titlebar=0,toolbar=0';
+                }
+                circle.on('click', function () {
+                  window.open(dataPoint.url, name, specs);
+                });
+              } else {
+                circle.on('click', function () {
+                  window.location.replace(dataPoint.url);
+                });
+              }
             }
 
             var value = dataPoint.valueRounded;
