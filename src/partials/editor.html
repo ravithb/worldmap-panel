@@ -214,6 +214,16 @@
       <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.urlField"
         ng-change="ctrl.refresh()" ng-model-onblur />
     </div>
+    <div class="gf-form" ng-show="ctrl.panel.locationData === 'table' && ctrl.notEmpty(ctrl.panel.tableQueryOptions.urlField)">
+      <label class="gf-form-label width-12">Open in New Window</label>
+      <gf-form-switch class="gf-form" checked="ctrl.panel.urlFollowOptions.openInNewWindow"
+      on-change="ctrl.render()"/>
+    </div>
+    <div class="gf-form" ng-show="ctrl.panel.locationData === 'table' && ctrl.notEmpty(ctrl.panel.tableQueryOptions.urlField) && ctrl.panel.urlFollowOptions.openInNewWindow">
+      <label class="gf-form-label width-12">Use Headless Window</label>
+      <gf-form-switch class="gf-form" checked="ctrl.panel.urlFollowOptions.useHeadlessWindow"
+      on-change="ctrl.render()"/>
+    </div>
     <div class="gf-form" ng-show="ctrl.panel.locationData === 'table'">
       <label class="gf-form-label width-12">Custom Label Field</label>
       <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.customLabelField"

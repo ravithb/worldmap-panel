@@ -49,8 +49,11 @@ const panelDefaults = {
     markerField: 'marker',
     customLabelField: 'label',
     urlField: 'url'
+  },
+  urlFollowOptions: {
+    openInNewWindow: true,
+    useHeadlessWindow: true
   }
-
 };
 
 const mapCenters = {
@@ -366,6 +369,11 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     } else {
       console.log("no variable 'bounds'");
     }
+  }
+
+/* eslint class-methods-use-this: 0 */
+  notEmpty(url) {
+    return (url && url.trim().length > 0);
   }
 
 /* eslint class-methods-use-this: 0 */

@@ -292,7 +292,16 @@ export default class WorldMap {
       location: dataPoint.key
     });
     if (dataPoint.url) {
-      circle.on('click', () => { window.location.replace(dataPoint.url); });
+      if (this.ctrl.panel.urlFollowOptions.openInNewWindow) {
+        const name = '_blank';
+        let specs = '';
+        if (this.ctrl.panel.urlFollowOptions.useHeadlessWindow) {
+          specs = 'menubar=0,resizable=1,location=0,titlebar=0,toolbar=0';
+        }
+        circle.on('click', () => { window.open(dataPoint.url, name, specs); });
+      } else {
+        circle.on('click', () => { window.location.replace(dataPoint.url); });
+      }
     }
 
     const value = dataPoint.valueRounded;
