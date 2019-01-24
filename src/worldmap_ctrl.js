@@ -49,6 +49,9 @@ const panelDefaults = {
     markerField: 'marker',
     customLabelField: 'label',
     urlField: 'url'
+  },
+  geoJsonOptions: {
+    popupContentField: 'Name'
   }
 
 };
@@ -157,7 +160,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
         this.locations = res;
         this.render();
       });
-    } else if (this.panel.locationData === 'table') {
+    } else if (this.panel.locationData === 'table' || this.panel.locationData === 'geo json') {
       // .. Do nothing
     } else if (this.panel.locationData !== 'geohash' && this.panel.locationData !== 'json result') {
       window.$.getJSON('public/plugins/grafana-custom-worldmap-panel/data/' + this.panel.locationData + '.json')
@@ -203,6 +206,9 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     } else if (this.panel.locationData === 'json result') {
       this.series = dataList;
       this.dataFormatter.setJsonValues(data);
+    } else if (this.panel.locationData === 'geo json') {
+      this.series = dataList;
+      this.dataFormatter.setGeoJsonValues(data);
     } else {
       this.series = dataList.map(this.seriesHandler.bind(this));
       this.dataFormatter.setValues(data);
@@ -286,7 +292,9 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   }
 
   changePathColors() {
-    this.map.setPathColors(this.panel.pathColor1, this.panel.pathColor2);
+    if (this.panel.pathColor1 && this.panel.pathColor2) {
+      this.map.setPathColors(this.panel.pathColor1, this.panel.pathColor2);
+    }
   }
 
   addExtraLineColor() {

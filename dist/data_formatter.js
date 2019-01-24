@@ -221,6 +221,19 @@ System.register(['lodash', './geohash'], function (_export, _context) {
             }
           }
         }, {
+          key: 'setGeoJsonValues',
+          value: function setGeoJsonValues(data) {
+            if (this.ctrl.series && this.ctrl.series.length > 0 && this.ctrl.series[0].rows && this.ctrl.series[0].rows.length > 0) {
+              this.ctrl.series[0].rows.forEach(function (row) {
+                if (row && Array.isArray(row) && row.length > 0) {
+                  data.push({
+                    geoJson: row[0]
+                  });
+                }
+              });
+            }
+          }
+        }, {
           key: 'setJsonValues',
           value: function setJsonValues(data) {
             if (this.ctrl.series && this.ctrl.series.length > 0) {

@@ -74,6 +74,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
             if (!moveEvent.target) {
               return;
             }
+            _this.setBoundsOnFirstLoad = false;
             _this.ctrl.onBoundsChange(_this.flattenBounds(moveEvent.target.getBounds(), 'move'));
           }.bind(this);
 
@@ -81,6 +82,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
             if (!zoomEvent.target) {
               return;
             }
+            _this.setBoundsOnFirstLoad = false;
             _this.ctrl.onBoundsChange(_this.flattenBounds(zoomEvent.target.getBounds(), 'zoom'));
           }.bind(this);
 
@@ -97,6 +99,8 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
           this.lineCoords = [];
           this.extraLineLayers = [];
           this.markerLayers = [];
+          this.geoJsonLayers = [];
+          this.geoJsonBounds = null;
           this.linesLayer = null;
           this.lineColor = _.first(this.ctrl.panel.colors);
           this.drawTrail = this.ctrl.panel.showTrail;
@@ -108,6 +112,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
           this.extraLineSecondaryColors = this.ctrl.panel.extraLineSecondaryColors;
           this.lastBounds = null;
           this.showAsAntPath = true;
+          this.setBoundsOnFirstLoad = true;
           return this.createMap();
         }
 
@@ -145,6 +150,9 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
             };
 
             this.legend.update = function () {
+              if (!_this2.ctrl.data || _this2.ctrl.data.length === 0) {
+                return;
+              }
               var thresholds = _this2.ctrl.data[0].thresholds;
               var legendHtml = '';
               legendHtml += '<div class="legend-item"><i style="background:' + _this2.ctrl.panel.colors[0] + '"></i> ' + '&lt; ' + thresholds[0] + '</div>';
@@ -184,6 +192,49 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
             }
           }
         }, {
+          key: 'onEachGeoJsonFeature',
+          value: function onEachGeoJsonFeature(feature, layer) {
+            // console.log('Feature %o', feature);
+            if (!this.ctrl.panel) {
+              return;
+            }
+
+            if (feature.properties[this.ctrl.panel.geoJsonOptions.popupContentField]) {
+              layer.bindPopup(feature.properties[this.ctrl.panel.geoJsonOptions.popupContentField]);
+            }
+          }
+        }, {
+          key: 'drawGeoJson',
+          value: function drawGeoJson() {
+            var _this4 = this;
+
+            var self = this;
+            var data = this.ctrl.data;
+            if (!data || !data.length) {
+              return;
+            }
+            data.forEach(function (dataObj) {
+              if (!dataObj || !dataObj.geoJson) {
+                return;
+              }
+              var geoJsonObj = JSON.parse(dataObj.geoJson);
+              var geoJsonLayer = window.L.geoJSON(geoJsonObj, {
+                onEachFeature: self.onEachGeoJsonFeature.bind(self)
+              }).addTo(_this4.map);
+
+              if (!_this4.geoJsonBounds) {
+                _this4.geoJsonBounds = geoJsonLayer.getBounds();
+              } else {
+                _this4.geoJsonBounds.extend(geoJsonLayer.getBounds());
+              }
+              if (_this4.geoJsonBounds && _this4.setBoundsOnFirstLoad) {
+                _this4.map.fitBounds(_this4.geoJsonBounds);
+              }
+
+              _this4.geoJsonLayers.push(geoJsonLayer);
+            });
+          }
+        }, {
           key: 'drawCircles',
           value: function drawCircles() {
             var data = this.filterEmptyAndZeroValues(this.ctrl.data[0]);
@@ -209,15 +260,15 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
         }, {
           key: 'createCircles',
           value: function createCircles(data) {
-            var _this4 = this;
+            var _this5 = this;
 
             var circles = [];
             data.forEach(function (dataPoint) {
               if (!dataPoint.locationName) return;
-              var c = _this4.createCircle(dataPoint);
-              _this4.lineColor = _this4.getColor(dataPoint.value);
-              if (_this4.drawTrail) {
-                _this4.lineCoords.push([c.getLatLng().lat, c.getLatLng().lng]);
+              var c = _this5.createCircle(dataPoint);
+              _this5.lineColor = _this5.getColor(dataPoint.value);
+              if (_this5.drawTrail) {
+                _this5.lineCoords.push([c.getLatLng().lat, c.getLatLng().lng]);
               }
               circles.push(c);
             });
@@ -227,14 +278,14 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
         }, {
           key: 'clearPolyLine',
           value: function clearPolyLine() {
-            var _this5 = this;
+            var _this6 = this;
 
             if (this.linesLayer) {
               this.removeLines(this.linesLayer);
             }
             if (this.extraLineLayers) {
               this.extraLineLayers.forEach(function (layer) {
-                _this5.removeLines(layer);
+                _this6.removeLines(layer);
               });
             }
             if (this.markerLayers) {
@@ -242,7 +293,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
                 if (layer.getPopup()) {
                   layer.unbindPopup();
                 }
-                _this5.removeLines(layer);
+                _this6.removeLines(layer);
               });
             }
           }
@@ -260,7 +311,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
         }, {
           key: 'drawMarkers',
           value: function drawMarkers(dataset) {
-            var _this6 = this;
+            var _this7 = this;
 
             var self = this;
             dataset.forEach(function (dataPoint) {
@@ -268,7 +319,7 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
                 var marker = window.L.marker([dataPoint.locationLatitude, dataPoint.locationLongitude], {
                   title: dataPoint.marker,
                   draggable: false
-                }).addTo(_this6.map);
+                }).addTo(_this7.map);
                 var popup = window.L.popup().setContent('<b style="color: #666666">' + dataPoint.marker + '</b>');
                 marker.bindPopup(popup);
                 marker.on('click', function (evt) {
@@ -343,25 +394,25 @@ System.register(['lodash', './libs/leaflet', './libs/leaflet-ant-path', './color
         }, {
           key: 'updateCircles',
           value: function updateCircles(data) {
-            var _this7 = this;
+            var _this8 = this;
 
             data.forEach(function (dataPoint) {
               if (!dataPoint.locationName) return;
 
-              var circle = _.find(_this7.circles, function (cir) {
+              var circle = _.find(_this8.circles, function (cir) {
                 return cir.options.location === dataPoint.key;
               });
 
               if (circle) {
-                circle.setRadius(_this7.calcCircleSize(dataPoint.value || 0));
+                circle.setRadius(_this8.calcCircleSize(dataPoint.value || 0));
                 circle.setStyle({
-                  color: _this7.getColor(dataPoint.value),
-                  fillColor: _this7.getColor(dataPoint.value),
+                  color: _this8.getColor(dataPoint.value),
+                  fillColor: _this8.getColor(dataPoint.value),
                   fillOpacity: 0.5,
                   location: dataPoint.key
                 });
                 circle.unbindPopup();
-                _this7.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
+                _this8.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
               }
             });
           }

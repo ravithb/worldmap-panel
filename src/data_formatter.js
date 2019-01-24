@@ -196,6 +196,21 @@ export default class DataFormatter {
     }
   }
 
+  setGeoJsonValues(data) {
+    if (this.ctrl.series &&
+      this.ctrl.series.length > 0 &&
+      this.ctrl.series[0].rows &&
+      this.ctrl.series[0].rows.length > 0) {
+      this.ctrl.series[0].rows.forEach((row) => {
+        if (row && Array.isArray(row) && row.length > 0) {
+          data.push({
+            geoJson: row[0]
+          });
+        }
+      });
+    }
+  }
+
   setJsonValues(data) {
     if (this.ctrl.series && this.ctrl.series.length > 0) {
       let highestValue = 0;
