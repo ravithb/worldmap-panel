@@ -99,6 +99,15 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
       case 'Stamen Maps':
         this.tileServer = 'Stamen Maps';
         break;
+      case 'Esri(Standard)':
+        this.tileServer = 'Esri Standard';
+        break;
+      case 'Esri(Transportation)':
+        this.tileServer = 'Esri Transportation';
+        break;
+      case 'Esri(Terrain)':
+        this.tileServer = 'Esri Terrain';
+        break;
       case 'CartoDB':
       default:
         this.tileServer = contextSrv.user.lightTheme ? 'CartoDB Positron' : 'CartoDB Dark';
@@ -116,9 +125,13 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   changeMapProvider() {
     if (this.panel.mapTileServer !== this.currentTileServer) {
       this.setMapProvider(this.context);
-      if (this.map) {
-        this.map.remove();
-        this.map = null;
+      try {
+        if (this.map) {
+          this.map.remove();
+          this.map = null;
+        }
+      } catch (ex) {
+        console.log(ex);
       }
 
       this.currentTileServer = this.tileServer;
