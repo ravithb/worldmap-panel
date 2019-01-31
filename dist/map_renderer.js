@@ -30,7 +30,11 @@ System.register(['./css/leaflet.css!', './worldmap'], function (_export, _contex
 
       if (!ctrl.map.legend && ctrl.panel.showLegend) ctrl.map.createLegend();
 
-      ctrl.map.drawCircles();
+      if (ctrl.panel.locationData === 'geo json') {
+        ctrl.map.drawGeoJson();
+      } else {
+        ctrl.map.drawCircles();
+      }
     }
   }
 

@@ -114,6 +114,9 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         urlFollowOptions: {
           openInNewWindow: true,
           useHeadlessWindow: true
+        },
+        geoJsonOptions: {
+          popupContentField: 'Name'
         }
       };
       mapCenters = {
@@ -231,7 +234,7 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
                 _this2.locations = res;
                 _this2.render();
               });
-            } else if (this.panel.locationData === 'table') {
+            } else if (this.panel.locationData === 'table' || this.panel.locationData === 'geo json') {
               // .. Do nothing
             } else if (this.panel.locationData !== 'geohash' && this.panel.locationData !== 'json result') {
               window.$.getJSON('public/plugins/grafana-custom-worldmap-panel/data/' + this.panel.locationData + '.json').then(this.reloadLocations.bind(this));
@@ -282,6 +285,9 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
             } else if (this.panel.locationData === 'json result') {
               this.series = dataList;
               this.dataFormatter.setJsonValues(data);
+            } else if (this.panel.locationData === 'geo json') {
+              this.series = dataList;
+              this.dataFormatter.setGeoJsonValues(data);
             } else {
               this.series = dataList.map(this.seriesHandler.bind(this));
               this.dataFormatter.setValues(data);
@@ -373,7 +379,9 @@ System.register(['app/plugins/sdk', 'app/core/time_series2', 'app/core/utils/kbn
         }, {
           key: 'changePathColors',
           value: function changePathColors() {
-            this.map.setPathColors(this.panel.pathColor1, this.panel.pathColor2);
+            if (this.panel.pathColor1 && this.panel.pathColor2) {
+              this.map.setPathColors(this.panel.pathColor1, this.panel.pathColor2);
+            }
           }
         }, {
           key: 'addExtraLineColor',

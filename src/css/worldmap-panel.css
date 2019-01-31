@@ -40,3 +40,5 @@
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
   color: #d8d9da !important;
 }
+
+div.leaflet-popup-content { color: #666666; }

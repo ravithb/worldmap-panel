@@ -27,6 +27,10 @@ export default function link(scope, elem, attrs, ctrl) {
 
     if (!ctrl.map.legend && ctrl.panel.showLegend) ctrl.map.createLegend();
 
-    ctrl.map.drawCircles();
+    if (ctrl.panel.locationData === 'geo json') {
+      ctrl.map.drawGeoJson();
+    } else {
+      ctrl.map.drawCircles();
+    }
   }
 }
