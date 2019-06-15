@@ -61,7 +61,8 @@ module.exports = (grunt) => {
           expand: true,
           src: ['**/*.js'],
           dest: 'dist',
-          ext: '.js'
+          ext: '.js',
+          extDot: 'last'
         }]
       },
     },

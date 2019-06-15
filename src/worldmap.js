@@ -1,7 +1,8 @@
 import _ from 'lodash';
 /* eslint-disable id-length, no-unused-vars */
 import L from './libs/leaflet';
-import './libs/leaflet-markercluster';
+import {} from './libs/leaflet-markercluster/index';
+
 /* eslint-disable id-length, no-unused-vars */
 import {
   antPath
