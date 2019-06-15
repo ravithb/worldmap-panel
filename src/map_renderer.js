@@ -1,4 +1,6 @@
 import './css/leaflet.css!';
+import './css/MarkerCluster.css!';
+import './css/MarkerCluster.Default.css!';
 import WorldMap from './worldmap';
 
 export default function link(scope, elem, attrs, ctrl) {

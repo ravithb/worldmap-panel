@@ -1,5 +1,7 @@
 node_modules
 npm-debug.log
 .DS_Store
+dist/*
+world-map.zip
 custom-worldmap*
 custom-worldmap-*.zip

@@ -1,6 +1,7 @@
 import _ from 'lodash';
 /* eslint-disable id-length, no-unused-vars */
 import L from './libs/leaflet';
+import './libs/leaflet-markercluster';
 /* eslint-disable id-length, no-unused-vars */
 import {
   antPath
@@ -263,12 +264,14 @@ export default class WorldMap {
 
   drawMarkers(dataset) {
     const self = this;
+    const markerGroup = L.markerClusterGroup();
     dataset.forEach((dataPoint) => {
       if (dataPoint.marker) {
         const marker = window.L.marker([dataPoint.locationLatitude, dataPoint.locationLongitude], {
           title: dataPoint.marker,
           draggable: false,
-        }).addTo(this.map);
+        });
+
         const popup = window.L.popup().setContent('<b style="color: #666666">' + dataPoint.marker + '</b>');
         marker.bindPopup(popup);
         marker.on('click', (evt) => {
@@ -282,9 +285,11 @@ export default class WorldMap {
           }
         });
 
-        self.markerLayers.push(marker);
+        markerGroup.addLayer(marker);
       }
     });
+    self.markerLayers.push(markerGroup);
+    markerGroup.this.addTo(this.map);
     return this.markerLayers;
   }
 
