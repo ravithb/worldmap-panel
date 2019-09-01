@@ -4,7 +4,7 @@
     <div class="gf-form">
       <label class="gf-form-label width-10">Tile Server</label>
       <div class="gf-form-select-wrapper max-width-10">
-        <select class="input-small gf-form-input" ng-model="ctrl.panel.mapTileServer" ng-options="ts for ts in ['CartoDB', 'Open Street Maps', 'Stamen Maps']"
+        <select class="input-small gf-form-input" ng-model="ctrl.panel.mapTileServer" ng-options="ts for ts in ['CartoDB', 'Open Street Maps', 'Stamen Maps','Esri(Standard)' ,'Esri(Transportation)' ,'Esri(Terrain)']"
           ng-change="ctrl.changeMapProvider()"></select>
       </div>
       <div class="gf-form" ng-show="ctrl.panel.mapCenter === 'custom'">
@@ -171,7 +171,7 @@
           how large the circle is.</li>
       </ul>
     </div>
-    <h6 ng-show="ctrl.panel.locationData === 'table' || ctrl.panel.locationData === 'geohash'">Field Mapping</h6>
+    <h6 ng-show="ctrl.panel.locationData === 'table' || ctrl.panel.locationData === 'geohash' || ctrl.panel.locationData === 'geo json'" >Field Mapping</h6>
     <div class="gf-form" ng-show="ctrl.panel.locationData === 'table'">
       <label class="gf-form-label width-12">Table Query Format</label>
       <div class="gf-form-select-wrapper max-width-10">

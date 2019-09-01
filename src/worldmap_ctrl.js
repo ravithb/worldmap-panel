@@ -392,6 +392,27 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     }
   }
 
+  emitClick(clickData) {
+    if (!clickData) {
+      return;
+    }
+    const clickDataVar = _.find(this.variableSrv.variables, (check) => {
+      return check.name === 'clickData';
+    });
+    if (clickDataVar) {
+      this.variableSrv.setOptionAsCurrent(clickDataVar, {
+        text: clickData,
+        value: clickData
+      });
+      this.variableSrv.variableUpdated(clickDataVar, true);
+      // console.log('variable set to %o', boundsJson);
+      // console.log(boundsVar);
+      // console.log(this);
+    } else {
+      console.log("no variable 'bounds'");
+    }
+  }
+
 /* eslint class-methods-use-this: 0 */
   notEmpty(url) {
     return (url && url.trim().length > 0);

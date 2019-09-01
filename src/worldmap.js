@@ -184,7 +184,12 @@ export default class WorldMap {
       const geoJsonLayer = window.L.geoJSON(geoJsonObj, {
         onEachFeature: self.onEachGeoJsonFeature.bind(self)
       }).addTo(this.map);
-
+      if (dataObj.label) {
+        const label = new window.L.Label();
+        label.setContent(dataObj.label);
+        label.setLatLng(geoJsonLayer.getBounds().getCenter());
+        this.map.showLabel(label);
+      }
       if (!this.geoJsonBounds) {
         this.geoJsonBounds = geoJsonLayer.getBounds();
       } else {

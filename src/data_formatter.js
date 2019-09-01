@@ -204,7 +204,8 @@ export default class DataFormatter {
       this.ctrl.series[0].rows.forEach((row) => {
         if (row && Array.isArray(row) && row.length > 0) {
           data.push({
-            geoJson: row[0]
+            geoJson: row[0],
+            label: (row.length > 1) ? row[1] : null
           });
         }
       });
