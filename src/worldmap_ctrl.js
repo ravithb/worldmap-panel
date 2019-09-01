@@ -55,7 +55,9 @@ const panelDefaults = {
     useHeadlessWindow: true
   },
   geoJsonOptions: {
-    popupContentField: 'Name'
+    popupContentField: 'Name',
+    clickDataField: null,
+    labelField: null
   }
 };
 
@@ -409,7 +411,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
       // console.log(boundsVar);
       // console.log(this);
     } else {
-      console.log("no variable 'bounds'");
+      console.log("no variable 'clickData'");
     }
   }
 

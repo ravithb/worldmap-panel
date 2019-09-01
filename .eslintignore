@@ -3,3 +3,4 @@ custom-worldmap/*
 custom-worldmap-*/*
 src/libs/leaflet.js
 src/libs/leaflet-ant-path.js
+src/libs/leaflet-label.js

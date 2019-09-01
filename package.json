@@ -1,6 +1,6 @@
 {
   "name": "custom-worldmap-panel",
-  "version": "1.2.9",
+  "version": "1.3.0",
   "description": "Worldmap Panel Plugin for Trapeze Grafana",
   "main": "src/module.js",
   "scripts": {

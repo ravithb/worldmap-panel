@@ -7,6 +7,7 @@ import {} from './libs/leaflet-markercluster/index';
 import {
   antPath
 } from './libs/leaflet-ant-path';
+import './libs/leaflet-label';
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["toCoords","flattenBounds","onEachGeoJsonFeature"] }] */
 /* eslint-disable no-extra-bind */
 import Colors from './colors';
@@ -167,6 +168,12 @@ export default class WorldMap {
 
     if (feature.properties[this.ctrl.panel.geoJsonOptions.popupContentField]) {
       layer.bindPopup(feature.properties[this.ctrl.panel.geoJsonOptions.popupContentField]);
+    }
+    if (feature.properties[this.ctrl.panel.geoJsonOptions.labelField]) {
+      layer.bindLabel(feature.properties[this.ctrl.panel.geoJsonOptions.labelField]);
+    }
+    if (feature.properties[this.ctrl.panel.geoJsonOptions.clickDataField]) {
+      layer.on('click', this.ctrl.emitClick(feature.properties[this.ctrl.panel.geoJsonOptions.clickDataField]);
     }
   }
 
