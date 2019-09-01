@@ -173,7 +173,7 @@ export default class WorldMap {
       layer.bindLabel(feature.properties[this.ctrl.panel.geoJsonOptions.labelField]);
     }
     if (feature.properties[this.ctrl.panel.geoJsonOptions.clickDataField]) {
-      layer.on('click', this.ctrl.emitClick(feature.properties[this.ctrl.panel.geoJsonOptions.clickDataField]);
+      layer.on('click', this.ctrl.emitClick(feature.properties[this.ctrl.panel.geoJsonOptions.clickDataField]));
     }
   }
 
