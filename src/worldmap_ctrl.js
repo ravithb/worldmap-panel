@@ -1,5 +1,11 @@
 /* eslint import/no-extraneous-dependencies: 0 */
-import {MetricsPanelCtrl} from 'app/plugins/sdk';
+/* eslint id-length: 0 */
+/* eslint prefer-const: 0 */
+/* eslint no-plusplus: 0 */
+/* eslint eqeqeq: 0 */
+import {
+  MetricsPanelCtrl
+} from 'app/plugins/sdk';
 import TimeSeries from 'app/core/time_series2';
 import kbn from 'app/core/utils/kbn';
 
@@ -8,6 +14,9 @@ import mapRenderer from './map_renderer';
 import DataFormatter from './data_formatter';
 import './css/worldmap-panel.css!';
 import Colors from './colors';
+import {
+  appEvents
+} from 'app/core/core';
 
 const panelDefaults = {
   maxDataPoints: 1,
@@ -47,6 +56,8 @@ const panelDefaults = {
     longitudeField: 'longitude',
     metricField: 'metric',
     markerField: 'marker',
+    timeField: 'time',
+    sortByTime: true,
     customLabelField: 'label',
     urlField: 'url'
   },
@@ -62,12 +73,30 @@ const panelDefaults = {
 };
 
 const mapCenters = {
-  '(0°, 0°)': {mapCenterLatitude: 0, mapCenterLongitude: 0},
-  'North America': {mapCenterLatitude: 40, mapCenterLongitude: -100},
-  'Europe': {mapCenterLatitude: 46, mapCenterLongitude: 14},
-  'West Asia': {mapCenterLatitude: 26, mapCenterLongitude: 53},
-  'SE Asia': {mapCenterLatitude: 10, mapCenterLongitude: 106},
-  'Last GeoHash': {mapCenterLatitude: 0, mapCenterLongitude: 0}
+  '(0°, 0°)': {
+    mapCenterLatitude: 0,
+    mapCenterLongitude: 0
+  },
+  'North America': {
+    mapCenterLatitude: 40,
+    mapCenterLongitude: -100
+  },
+  'Europe': {
+    mapCenterLatitude: 46,
+    mapCenterLongitude: 14
+  },
+  'West Asia': {
+    mapCenterLatitude: 26,
+    mapCenterLongitude: 53
+  },
+  'SE Asia': {
+    mapCenterLatitude: 10,
+    mapCenterLongitude: 106
+  },
+  'Last GeoHash': {
+    mapCenterLatitude: 0,
+    mapCenterLongitude: 0
+  }
 };
 
 export default class WorldmapCtrl extends MetricsPanelCtrl {
@@ -90,7 +119,52 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
     this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
 
+    appEvents.on('graph-hover', this.onGraphHover.bind(this), $scope);
+    appEvents.on('graph-hover-clear', this.onGraphHoverClear.bind(this), $scope);
+
     this.loadLocationDataFromFile();
+  }
+
+  onGraphHover(ev) {
+    if (this.data) {
+      let i = 0;
+      for (let d of this.data) {
+        this.drawPinAtTimestamp(ev.pos.x, i, d);
+        i++;
+      }
+    }
+  }
+
+  drawPinAtTimestamp(time, index, data) {
+    let dataItem = this.findClosestMatch(time, data);
+    if (dataItem) {
+      // console.log(dataItem.time, dataItem.locationLatitude, dataItem.locationLongitude);
+      this.map.drawPin(dataItem.locationLatitude, dataItem.locationLongitude);
+    }
+  }
+
+  findClosestMatch(num, arr) {
+    let mid;
+    let lo = 0;
+    let hi = arr.length - 1;
+    while (hi - lo > 1) {
+      mid = Math.floor((lo + hi) / 2);
+      if (arr[mid].time < num) {
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+    }
+    if (num - arr[lo].time <= arr[hi].time - num) {
+      return arr[lo];
+    }
+    return arr[hi];
+  }
+
+  onGraphHoverClear() {
+    if (this.map) {
+      this.map.clearPins();
+    }
   }
 
   setMapProvider(contextSrv) {
@@ -215,7 +289,6 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     }
 
     const data = [];
-
     if (this.panel.locationData === 'geohash') {
       this.dataFormatter.setGeohashValues(dataList, data);
     } else if (this.panel.locationData === 'table') {
@@ -289,6 +362,11 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   }
 
   toggleStickyLabels() {
+    this.map.clearCircles();
+    this.render();
+  }
+
+  toggleSortByTime() {
     this.map.clearCircles();
     this.render();
   }
@@ -415,12 +493,12 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     }
   }
 
-/* eslint class-methods-use-this: 0 */
+  /* eslint class-methods-use-this: 0 */
   notEmpty(url) {
     return (url && url.trim().length > 0);
   }
 
-/* eslint class-methods-use-this: 0 */
+  /* eslint class-methods-use-this: 0 */
   link(scope, elem, attrs, ctrl) {
     mapRenderer(scope, elem, attrs, ctrl);
   }

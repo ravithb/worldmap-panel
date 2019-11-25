@@ -66,6 +66,7 @@ export default class WorldMap {
     this.geoJsonLayers = [];
     this.geoJsonBounds = null;
     this.linesLayer = null;
+    this.pinsLayer = null;
     this.lineColor = _.first(this.ctrl.panel.colors);
     this.drawTrail = this.ctrl.panel.showTrail;
     this.antPathDelay = this.ctrl.panel.antPathDelay;
@@ -262,6 +263,29 @@ export default class WorldMap {
         }
         this.removeLines(layer);
       });
+    }
+  }
+
+  drawPin(lat, long) {
+    if (this.pinsLayer) {
+      this.pinsLayer.remove();
+    }
+    this.pinsLayer = window.L.layerGroup([]);
+
+    console.log('drawpin', lat, long);
+    const marker = window.L.marker([lat, long], {
+      title: '',
+      draggable: false,
+    });
+
+    this.pinsLayer.addLayer(marker);
+    this.pinsLayer.addTo(this.map);
+  }
+
+  clearPins() {
+    if (this.pinsLayer) {
+      this.pinsLayer.remove();
+      this.pinsLayer = null;
     }
   }
 

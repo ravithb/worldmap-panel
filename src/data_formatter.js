@@ -1,3 +1,6 @@
+/* eslint array-callback-return:0 */
+/* eslint eqeqeq:0 */
+
 import _ from 'lodash';
 import decodeGeoHash from './geohash';
 
@@ -15,12 +18,19 @@ export default class DataFormatter {
       this.ctrl.series.forEach((serie) => {
         const lastPoint = _.last(serie.datapoints);
         const lastValue = _.isArray(lastPoint) ? lastPoint[0] : null;
-        const location = _.find(this.ctrl.locations, (loc) => { return loc.key.toUpperCase() === serie.alias.toUpperCase(); });
+        const location = _.find(this.ctrl.locations, (loc) => {
+          return loc.key.toUpperCase() === serie.alias.toUpperCase();
+        });
 
         if (!location) return;
 
         if (_.isString(lastValue)) {
-          data.push({key: serie.alias, value: 0, valueFormatted: lastValue, valueRounded: 0});
+          data.push({
+            key: serie.alias,
+            value: 0,
+            valueFormatted: lastValue,
+            valueRounded: 0
+          });
         } else {
           const dataValue = {
             key: serie.alias,
@@ -177,6 +187,7 @@ export default class DataFormatter {
             label: datapoint[this.ctrl.panel.tableQueryOptions.customLabelField],
             value: datapoint[this.ctrl.panel.tableQueryOptions.metricField],
             valueFormatted: datapoint[this.ctrl.panel.tableQueryOptions.metricField],
+            time: datapoint[this.ctrl.panel.tableQueryOptions.timeField] || null,
             valueRounded: 0
           };
 
@@ -186,6 +197,19 @@ export default class DataFormatter {
           dataValue.valueRounded = this.kbn.roundValue(dataValue.value, this.ctrl.panel.decimals || 0);
           data.push(dataValue);
         });
+
+        if (this.ctrl.panel.tableQueryOptions.sortByTime) {
+          data.sort((a, b) => {
+            if (a && typeof a.time !== 'undefined' && b && typeof b.time !== 'undefined') {
+              if (a.time == b.time) {
+                return 0;
+              } else if (a.time < b.time) {
+                return -1;
+              }
+              return 1;
+            }
+          });
+        }
 
         masterData[index] = data;
         data.highestValue = highestValue;
