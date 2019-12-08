@@ -188,6 +188,7 @@ export default class DataFormatter {
             value: datapoint[this.ctrl.panel.tableQueryOptions.metricField],
             valueFormatted: datapoint[this.ctrl.panel.tableQueryOptions.metricField],
             time: datapoint[this.ctrl.panel.tableQueryOptions.timeField] || null,
+            timestampDataQueryIndex: 0,
             valueRounded: 0
           };
 

@@ -57,6 +57,7 @@ const panelDefaults = {
     metricField: 'metric',
     markerField: 'marker',
     timeField: 'time',
+    timestampDataQueryIndex: 0,
     sortByTime: true,
     customLabelField: 'label',
     urlField: 'url'
@@ -127,15 +128,15 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
 
   onGraphHover(ev) {
     if (this.data) {
-      let i = 0;
-      for (let d of this.data) {
-        this.drawPinAtTimestamp(ev.pos.x, i, d);
-        i++;
+      let idx = this.panel.tableQueryOptions.timestampDataQueryIndex;
+
+      if (idx >= 0 && idx < this.data.length) {
+        this.drawPinAtTimestamp(ev.pos.x, this.data[idx]);
       }
     }
   }
 
-  drawPinAtTimestamp(time, index, data) {
+  drawPinAtTimestamp(time, data) {
     let dataItem = this.findClosestMatch(time, data);
     if (dataItem) {
       // console.log(dataItem.time, dataItem.locationLatitude, dataItem.locationLongitude);

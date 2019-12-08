@@ -219,6 +219,21 @@
       <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tableQueryOptions.timeField"
         ng-change="ctrl.refresh()" ng-model-onblur />
     </div>
+    <div class="gf-form" ng-show="ctrl.panel.locationData === 'table'">
+      <label class="gf-form-label width-12">Timestamp Data Query</label>
+      <select class="input-small gf-form-input" ng-model="ctrl.panel.tableQueryOptions.timestampDataQueryIndex">
+        <option value="0">A</option>
+        <option value="1">B</option>
+        <option value="2">C</option>
+        <option value="3">D</option>
+        <option value="4">E</option>
+        <option value="5">F</option>
+        <option value="6">G</option>
+        <option value="7">H</option>
+        <option value="8">I</option>
+        <option value="9">J</option>
+      </select>
+    </div>
     <gf-form-switch class="gf-form" label="Sort By Time" label-class="width-10" checked="ctrl.panel.tableQueryOptions.sortByTime"
       on-change="ctrl.toggleSortByTime()">
     </gf-form-switch>
